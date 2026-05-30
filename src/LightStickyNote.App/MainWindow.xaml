@@ -1,0 +1,117 @@
+<Window x:Class="LightStickyNote.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:LightStickyNote.App.ViewModels"
+        mc:Ignorable="d"
+        Title="Light Sticky Note"
+        Width="360"
+        Height="640"
+        MinWidth="280"
+        MinHeight="360"
+        ResizeMode="CanResizeWithGrip"
+        Background="#FFF9D9"
+        Opacity="{Binding Settings.Opacity}"
+        Topmost="{Binding Settings.AlwaysOnTop}">
+    <Window.Resources>
+        <Style TargetType="TextBox" x:Key="ItemEditorStyle">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="2" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="AcceptsReturn" Value="True" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="HintStyle">
+            <Setter Property="Foreground" Value="#806F5D" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+    </Window.Resources>
+    <Border Padding="14" Background="#FFF9D9">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel>
+                <TextBlock Text="{Binding NoteTitle}" FontSize="20" FontWeight="SemiBold" Foreground="#5A4B3D" />
+                <TextBlock Text="轻量桌面便签" Style="{StaticResource HintStyle}" />
+            </StackPanel>
+
+            <DockPanel Grid.Row="1" Margin="0,12,0,12">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Items}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:TaskItemViewModel}">
+                                <Border Padding="6" Margin="0,0,0,6" Background="#FFFDEB" CornerRadius="8">
+                                    <DockPanel LastChildFill="True">
+                                        <Button DockPanel.Dock="Right"
+                                                Width="24"
+                                                Height="24"
+                                                Margin="8,0,0,0"
+                                                Command="{Binding DataContext.DeleteItemCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                CommandParameter="{Binding}"
+                                                Background="#FFF2C7"
+                                                BorderBrush="#FFD7A7"
+                                                ToolTip="删除">
+                                            <TextBlock Text="×" FontSize="14" />
+                                        </Button>
+                                        <CheckBox DockPanel.Dock="Left"
+                                                  Margin="0,2,8,0"
+                                                  VerticalAlignment="Top"
+                                                  IsChecked="{Binding IsDone, UpdateSourceTrigger=PropertyChanged}" />
+                                        <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
+                                                 Foreground="#3F352B">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox" BasedOn="{StaticResource ItemEditorStyle}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsDone}" Value="True">
+                                                            <Setter Property="TextDecorations" Value="Strikethrough" />
+                                                            <Setter Property="Foreground" Value="#8C7D70" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
+                                    </DockPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+
+            <StackPanel Grid.Row="2">
+                <Border Background="#FFFDEB" CornerRadius="8" Padding="8">
+                    <TextBox x:Name="NewTaskTextBox"
+                             Text="{Binding NewTaskText, UpdateSourceTrigger=PropertyChanged}"
+                             BorderThickness="0"
+                             Background="Transparent"
+                             Foreground="#3F352B"
+                             FontSize="14"
+                             KeyDown="NewTaskTextBox_OnKeyDown"
+                             ToolTip="输入任务后按 Enter 新增" />
+                </Border>
+                <DockPanel Margin="0,10,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Content="始终置顶"
+                                  Margin="0,0,12,0"
+                                  VerticalAlignment="Center"
+                                  IsChecked="{Binding Settings.AlwaysOnTop, UpdateSourceTrigger=PropertyChanged}" />
+                        <CheckBox Content="开机自启动"
+                                  VerticalAlignment="Center"
+                                  IsChecked="{Binding Settings.LaunchAtStartup, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                    <TextBlock DockPanel.Dock="Right"
+                               Text="{Binding StatusMessage}"
+                               Foreground="#806F5D"
+                               FontSize="11"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

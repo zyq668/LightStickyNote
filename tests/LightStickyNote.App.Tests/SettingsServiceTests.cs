@@ -1,0 +1,67 @@
+using LightStickyNote.App.Models;
+using LightStickyNote.App.Services;
+
+namespace LightStickyNote.App.Tests;
+
+public sealed class SettingsServiceTests : IDisposable
+{
+    private readonly string _rootDirectory;
+
+    public SettingsServiceTests()
+    {
+        _rootDirectory = Path.Combine(
+            "D:\\CodexProjects\\LightStickyNote",
+            "tests",
+            "LightStickyNote.App.Tests",
+            "test-output",
+            Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(_rootDirectory);
+    }
+
+    [Fact]
+    public async Task LoadAsync_ReturnsDefaults_WhenFileMissing()
+    {
+        var settingsPath = Path.Combine(_rootDirectory, "appsettings.json");
+        var service = new SettingsService(settingsPath);
+
+        var settings = await service.LoadAsync();
+
+        Assert.True(settings.AlwaysOnTop);
+        Assert.True(File.Exists(settingsPath));
+    }
+
+    [Fact]
+    public async Task SaveAsync_PersistsConfiguredValues()
+    {
+        var settingsPath = Path.Combine(_rootDirectory, "appsettings.json");
+        var service = new SettingsService(settingsPath);
+        var settings = new AppSettings
+        {
+            AlwaysOnTop = false,
+            Opacity = 0.9
+        };
+
+        await service.SaveAsync(settings);
+        var reloaded = await service.LoadAsync();
+
+        Assert.False(reloaded.AlwaysOnTop);
+        Assert.Equal(0.9, reloaded.Opacity);
+    }
+
+    public void Dispose()
+    {
+        try
+        {
+            if (Directory.Exists(_rootDirectory))
+            {
+                Directory.Delete(_rootDirectory, recursive: true);
+            }
+        }
+        catch (IOException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+    }
+}
