@@ -491,3 +491,6 @@ $RECYCLE.BIN/
 src/LightStickyNote.App/bin/
 src/LightStickyNote.App/obj/
 tests/**/test-output/
+
+# Local visual brainstorming artifacts
+.superpowers/

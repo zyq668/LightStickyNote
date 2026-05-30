@@ -6,60 +6,36 @@
         xmlns:vm="clr-namespace:LightStickyNote.App.ViewModels"
         mc:Ignorable="d"
         Title="Light Sticky Note"
-        Width="380"
-        Height="680"
-        MinWidth="330"
-        MinHeight="420"
+        Width="360"
+        Height="620"
+        MinWidth="310"
+        MinHeight="360"
+        WindowStyle="None"
         ResizeMode="CanResizeWithGrip"
-        Background="#FFF7DB"
+        Background="#0B1018"
         FontFamily="Microsoft YaHei UI"
         Opacity="{Binding Settings.Opacity}"
         Topmost="{Binding Settings.AlwaysOnTop}">
     <Window.Resources>
-        <LinearGradientBrush x:Key="PaperBackground" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#FFFFF8E8" Offset="0" />
-            <GradientStop Color="#FFFFEDC2" Offset="1" />
+        <LinearGradientBrush x:Key="PanelBackground" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#FF111925" Offset="0" />
+            <GradientStop Color="#FF0A0F17" Offset="1" />
         </LinearGradientBrush>
 
-        <SolidColorBrush x:Key="InkBrush" Color="#493B2F" />
-        <SolidColorBrush x:Key="MutedInkBrush" Color="#8A7865" />
-        <SolidColorBrush x:Key="AccentBrush" Color="#D98552" />
-        <SolidColorBrush x:Key="CardBrush" Color="#D9FFFDF4" />
-        <SolidColorBrush x:Key="CardBorderBrush" Color="#70E9D8B9" />
+        <SolidColorBrush x:Key="TextBrush" Color="#DCE7FF" />
+        <SolidColorBrush x:Key="MutedTextBrush" Color="#8494B4" />
+        <SolidColorBrush x:Key="AccentBrush" Color="#91B5FF" />
+        <SolidColorBrush x:Key="CardBrush" Color="#B2192332" />
+        <SolidColorBrush x:Key="CardBorderBrush" Color="#462F405D" />
 
-        <Style x:Key="SectionLabelStyle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource MutedInkBrush}" />
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        </Style>
-
-        <Style x:Key="TaskEditorStyle" TargetType="TextBox">
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="{StaticResource InkBrush}" />
-            <Setter Property="Padding" Value="2,1" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-            <Setter Property="AcceptsReturn" Value="True" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="CaretBrush" Value="{StaticResource AccentBrush}" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsDone}" Value="True">
-                    <Setter Property="TextDecorations" Value="Strikethrough" />
-                    <Setter Property="Foreground" Value="#A79582" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="DeleteButtonStyle" TargetType="Button">
-            <Setter Property="Width" Value="26" />
-            <Setter Property="Height" Value="26" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-            <Setter Property="Foreground" Value="#A98C73" />
+        <Style x:Key="IconButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="#441D293B" />
+            <Setter Property="BorderBrush" Value="#4B4E6791" />
+            <Setter Property="Foreground" Value="#BBD0FF" />
             <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="ToolTip" Value="删除任务" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -67,17 +43,17 @@
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="1"
-                                CornerRadius="13">
+                                CornerRadius="9">
                             <ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="#33D98552" />
-                                <Setter Property="Foreground" Value="#C4653E" />
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#66324A70" />
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="#997FA6EA" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="#55D98552" />
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#88405D8C" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -85,75 +61,195 @@
             </Setter>
         </Style>
 
-        <Style x:Key="SettingCheckBoxStyle" TargetType="CheckBox">
-            <Setter Property="Foreground" Value="#6F5A47" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="VerticalAlignment" Value="Center" />
+        <Style x:Key="TaskCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="Width" Value="18" />
+            <Setter Property="Height" Value="18" />
             <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Border x:Name="CheckBorder"
+                                Width="16"
+                                Height="16"
+                                Background="#321C2A3D"
+                                BorderBrush="#936E91C7"
+                                BorderThickness="1"
+                                CornerRadius="5">
+                            <TextBlock x:Name="CheckGlyph"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Text="✓"
+                                       Foreground="#BFD3FF"
+                                       FontFamily="Segoe UI Symbol"
+                                       FontSize="11"
+                                       FontWeight="Bold"
+                                       Visibility="Collapsed" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="CheckBorder" Property="Background" Value="#73527BBB" />
+                                <Setter TargetName="CheckBorder" Property="BorderBrush" Value="#CC91B5FF" />
+                                <Setter TargetName="CheckGlyph" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="CheckBorder" Property="BorderBrush" Value="#E6A8C3FF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TaskEditorStyle" TargetType="TextBox">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+            <Setter Property="Padding" Value="2,1" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="AcceptsReturn" Value="True" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="CaretBrush" Value="{StaticResource AccentBrush}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsDone}" Value="True">
+                    <Setter Property="TextDecorations" Value="Strikethrough" />
+                    <Setter Property="Foreground" Value="#63718B" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="DeleteButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="25" />
+            <Setter Property="Height" Value="25" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Foreground" Value="#8494B4" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="ToolTip" Value="删除任务" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="DeleteBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="DeleteBorder" Property="Background" Value="#663C2635" />
+                                <Setter TargetName="DeleteBorder" Property="BorderBrush" Value="#886D3C52" />
+                                <Setter Property="Foreground" Value="#FF9CB1" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SettingToggleStyle" TargetType="CheckBox">
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="18" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Border x:Name="Track"
+                                Width="34"
+                                Height="16"
+                                Background="#3A28364D"
+                                BorderBrush="#4D526A91"
+                                BorderThickness="1"
+                                CornerRadius="8">
+                            <Ellipse x:Name="Thumb"
+                                     Width="10"
+                                     Height="10"
+                                     Margin="3,0,0,0"
+                                     HorizontalAlignment="Left"
+                                     Fill="#8291AC" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Track" Property="Background" Value="#805578BA" />
+                                <Setter TargetName="Track" Property="BorderBrush" Value="#A691B5FF" />
+                                <Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right" />
+                                <Setter TargetName="Thumb" Property="Margin" Value="0,0,3,0" />
+                                <Setter TargetName="Thumb" Property="Fill" Value="#C7D8FF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
 
-    <Border Padding="18"
-            Background="{StaticResource PaperBackground}"
-            BorderBrush="#80E4C995"
+    <Border Background="{StaticResource PanelBackground}"
+            BorderBrush="#65455C83"
             BorderThickness="1">
-        <Grid>
+        <Grid Margin="14,10,14,14">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="34" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0">
+            <Grid Grid.Row="0"
+                  Background="Transparent"
+                  MouseLeftButtonDown="Header_OnMouseLeftButtonDown">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Ellipse Width="9"
-                                 Height="9"
-                                 Margin="0,1,8,0"
-                                 Fill="{StaticResource AccentBrush}" />
-                        <TextBlock Text="LIGHT STICKY"
-                                   Foreground="{StaticResource AccentBrush}"
-                                   FontSize="11"
-                                   FontWeight="Bold" />
-                    </StackPanel>
-                    <TextBlock Margin="0,8,0,0"
-                               Text="{Binding NoteTitle}"
-                               Foreground="{StaticResource InkBrush}"
-                               FontSize="25"
-                               FontWeight="SemiBold" />
-                    <TextBlock Margin="0,4,0,0"
-                               Text="把今天要紧的事，安静地放在桌面一角。"
-                               Foreground="{StaticResource MutedInkBrush}"
-                               FontSize="12" />
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <Ellipse Width="7"
+                             Height="7"
+                             Margin="2,0,8,0"
+                             Fill="#91B5FF" />
+                    <TextBlock VerticalAlignment="Center"
+                               Text="STICKY // ACTIVE"
+                               Foreground="#A7C0F5"
+                               FontFamily="Consolas"
+                               FontSize="11"
+                               FontWeight="Bold" />
+                    <TextBlock Margin="10,0,0,0"
+                               VerticalAlignment="Center"
+                               Text="{Binding Items.Count, StringFormat={}{0:00}}"
+                               Foreground="#5F7090"
+                               FontFamily="Consolas"
+                               FontSize="11" />
                 </StackPanel>
 
-                <Border Grid.Column="1"
-                        Margin="12,2,0,0"
-                        Padding="10,5"
-                        VerticalAlignment="Top"
-                        Background="#80FFFFFF"
-                        BorderBrush="#50D9B985"
-                        BorderThickness="1"
-                        CornerRadius="14">
-                    <TextBlock Text="{Binding Items.Count, StringFormat={}{0} 条任务}"
-                               Foreground="#806447"
-                               FontSize="11"
-                               FontWeight="SemiBold" />
-                </Border>
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal">
+                    <Button x:Name="SettingsButton"
+                            Margin="0,0,6,0"
+                            Click="SettingsButton_OnClick"
+                            Style="{StaticResource IconButtonStyle}"
+                            ToolTip="设置">
+                        <TextBlock Text="⚙"
+                                   FontFamily="Segoe UI Symbol"
+                                   FontSize="14" />
+                    </Button>
+                    <Button Click="HideToTrayButton_OnClick"
+                            Style="{StaticResource IconButtonStyle}"
+                            ToolTip="隐藏到托盘">
+                        <TextBlock Text="×"
+                                   FontFamily="Segoe UI"
+                                   FontSize="17" />
+                    </Button>
+                </StackPanel>
             </Grid>
 
-            <Grid Grid.Row="1" Margin="0,20,0,14">
-                <Border Padding="18"
-                        Background="#32FFFFFF"
-                        BorderBrush="#38D7BE92"
-                        BorderThickness="1"
-                        CornerRadius="16">
+            <Grid Grid.Row="1"
+                  Margin="0,12,0,12">
+                <Border Background="#24192534"
+                        BorderBrush="#363B506F"
+                        BorderThickness="1">
                     <Border.Style>
                         <Style TargetType="Border">
                             <Setter Property="Visibility" Value="Collapsed" />
@@ -164,165 +260,181 @@
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
-                    <StackPanel HorizontalAlignment="Center"
-                                VerticalAlignment="Center">
-                        <TextBlock HorizontalAlignment="Center"
-                                   Text="✓"
-                                   Foreground="#C9A26E"
-                                   FontSize="28"
-                                   FontWeight="Light" />
-                        <TextBlock Margin="0,8,0,0"
-                                   HorizontalAlignment="Center"
-                                   Text="这里还很安静"
-                                   Foreground="#7D6755"
-                                   FontSize="15"
-                                   FontWeight="SemiBold" />
-                        <TextBlock Margin="0,5,0,0"
-                                   HorizontalAlignment="Center"
-                                   Text="在下方写下第一件要做的事"
-                                   Foreground="#A28E79"
-                                   FontSize="12" />
-                    </StackPanel>
+                    <TextBlock HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Text="NO ACTIVE TASKS"
+                               Foreground="#5E7092"
+                               FontFamily="Consolas"
+                               FontSize="11" />
                 </Border>
 
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <ItemsControl ItemsSource="{Binding Items}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="{x:Type vm:TaskItemViewModel}">
-                                <Border Margin="0,0,0,9"
-                                        Padding="11,9"
+                                <Border x:Name="TaskCard"
+                                        Margin="0,0,0,8"
+                                        Padding="10,8"
                                         Background="{StaticResource CardBrush}"
                                         BorderBrush="{StaticResource CardBorderBrush}"
                                         BorderThickness="1"
-                                        CornerRadius="12">
+                                        CornerRadius="10">
                                     <DockPanel LastChildFill="True">
-                                        <Button DockPanel.Dock="Right"
-                                                Margin="8,0,0,0"
+                                        <Button x:Name="DeleteButton"
+                                                DockPanel.Dock="Right"
+                                                Margin="7,0,0,0"
                                                 Command="{Binding DataContext.DeleteItemCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                 CommandParameter="{Binding}"
                                                 Style="{StaticResource DeleteButtonStyle}">
                                             <TextBlock Text="×"
                                                        FontFamily="Segoe UI"
-                                                       FontSize="17"
-                                                       FontWeight="SemiBold" />
+                                                       FontSize="16" />
                                         </Button>
                                         <CheckBox DockPanel.Dock="Left"
-                                                  Margin="0,4,9,0"
+                                                  Margin="0,3,9,0"
                                                   VerticalAlignment="Top"
-                                                  Cursor="Hand"
-                                                  IsChecked="{Binding IsDone, UpdateSourceTrigger=PropertyChanged}" />
+                                                  IsChecked="{Binding IsDone, UpdateSourceTrigger=PropertyChanged}"
+                                                  Style="{StaticResource TaskCheckBoxStyle}" />
                                         <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
                                                  Style="{StaticResource TaskEditorStyle}" />
                                     </DockPanel>
                                 </Border>
+                                <DataTemplate.Triggers>
+                                    <Trigger SourceName="TaskCard" Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="DeleteButton" Property="Opacity" Value="1" />
+                                        <Setter TargetName="TaskCard" Property="BorderBrush" Value="#725A78A8" />
+                                    </Trigger>
+                                </DataTemplate.Triggers>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </ScrollViewer>
             </Grid>
 
-            <StackPanel Grid.Row="2">
-                <TextBlock Margin="2,0,0,7"
-                           Text="快速记录"
-                           Style="{StaticResource SectionLabelStyle}" />
-                <Border Padding="12,10"
-                        Background="#CCFFFFFF"
-                        BorderBrush="#85E1BD82"
-                        BorderThickness="1"
-                        CornerRadius="13">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Margin="0,-1,9,0"
-                                   VerticalAlignment="Center"
-                                   Text="+"
-                                   Foreground="{StaticResource AccentBrush}"
-                                   FontFamily="Segoe UI"
-                                   FontSize="23"
-                                   FontWeight="Light" />
-                        <TextBox x:Name="NewTaskTextBox"
-                                 Grid.Column="1"
-                                 VerticalAlignment="Center"
-                                 Text="{Binding NewTaskText, UpdateSourceTrigger=PropertyChanged}"
-                                 BorderThickness="0"
-                                 Background="Transparent"
-                                 CaretBrush="{StaticResource AccentBrush}"
-                                 Foreground="{StaticResource InkBrush}"
-                                 FontSize="14"
-                                 KeyDown="NewTaskTextBox_OnKeyDown"
-                                 ToolTip="输入任务后按 Enter 新增" />
-                        <TextBlock Grid.Column="2"
-                                   Margin="8,0,0,0"
-                                   VerticalAlignment="Center"
-                                   Text="ENTER"
-                                   Foreground="#B19B82"
-                                   FontSize="9"
-                                   FontWeight="Bold" />
-                    </Grid>
-                </Border>
-            </StackPanel>
-
-            <Border Grid.Row="3"
-                    Margin="0,14,0,0"
-                    Padding="11,9"
-                    Background="#40FFFFFF"
-                    BorderBrush="#40D7BE92"
+            <Border Grid.Row="2"
+                    Padding="11,8"
+                    Background="#B2192433"
+                    BorderBrush="#5B4A648E"
                     BorderThickness="1"
-                    CornerRadius="12">
-                <StackPanel>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Orientation="Horizontal">
-                            <CheckBox Content="始终置顶"
-                                      Margin="0,0,14,0"
-                                      IsChecked="{Binding Settings.AlwaysOnTop, UpdateSourceTrigger=PropertyChanged}"
-                                      Style="{StaticResource SettingCheckBoxStyle}" />
-                            <CheckBox Content="开机自启"
-                                      IsChecked="{Binding Settings.LaunchAtStartup, UpdateSourceTrigger=PropertyChanged}"
-                                      Style="{StaticResource SettingCheckBoxStyle}" />
-                        </StackPanel>
-                        <TextBlock Grid.Column="1"
-                                   VerticalAlignment="Center"
-                                   Text="{Binding StatusMessage}"
-                                   Foreground="#A08B75"
-                                   FontSize="10" />
-                    </Grid>
-
-                    <Grid Margin="0,9,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock VerticalAlignment="Center"
-                                   Text="透明度"
-                                   Style="{StaticResource SectionLabelStyle}" />
-                        <Slider Grid.Column="1"
-                                Margin="12,0"
-                                VerticalAlignment="Center"
-                                Minimum="0.65"
-                                Maximum="1"
-                                TickFrequency="0.05"
-                                IsSnapToTickEnabled="False"
-                                IsMoveToPointEnabled="True"
-                                Value="{Binding Settings.Opacity, UpdateSourceTrigger=PropertyChanged}" />
-                        <TextBlock Grid.Column="2"
-                                   MinWidth="32"
-                                   VerticalAlignment="Center"
-                                   Text="{Binding Settings.Opacity, StringFormat={}{0:P0}}"
-                                   Foreground="#806447"
-                                   FontSize="11"
-                                   FontWeight="SemiBold"
-                                   TextAlignment="Right" />
-                    </Grid>
-                </StackPanel>
+                    CornerRadius="10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Margin="0,-1,9,0"
+                               VerticalAlignment="Center"
+                               Text="+"
+                               Foreground="{StaticResource AccentBrush}"
+                               FontFamily="Segoe UI"
+                               FontSize="21"
+                               FontWeight="Light" />
+                    <TextBox x:Name="NewTaskTextBox"
+                             Grid.Column="1"
+                             VerticalAlignment="Center"
+                             Text="{Binding NewTaskText, UpdateSourceTrigger=PropertyChanged}"
+                             BorderThickness="0"
+                             Background="Transparent"
+                             CaretBrush="{StaticResource AccentBrush}"
+                             Foreground="{StaticResource TextBrush}"
+                             FontSize="13"
+                             KeyDown="NewTaskTextBox_OnKeyDown"
+                             ToolTip="输入任务后按 Enter 新增" />
+                    <TextBlock Grid.Column="2"
+                               Margin="8,0,0,0"
+                               VerticalAlignment="Center"
+                               Text="ENTER"
+                               Foreground="#657493"
+                               FontFamily="Consolas"
+                               FontSize="9" />
+                </Grid>
             </Border>
+
+            <Popup x:Name="SettingsPopup"
+                   Placement="Bottom"
+                   PlacementTarget="{Binding ElementName=SettingsButton}"
+                   HorizontalOffset="-174"
+                   VerticalOffset="7"
+                   AllowsTransparency="True"
+                   StaysOpen="False">
+                <Border Width="210"
+                        Padding="14"
+                        Background="#FC101722"
+                        BorderBrush="#865772A0"
+                        BorderThickness="1"
+                        CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="18"
+                                          Opacity="0.5"
+                                          ShadowDepth="4"
+                                          Color="#000000" />
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Margin="1,0,0,8"
+                                   Text="SYSTEM SETTINGS"
+                                   Foreground="#A7C0F5"
+                                   FontFamily="Consolas"
+                                   FontSize="10"
+                                   FontWeight="Bold" />
+
+                        <Grid Height="34">
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="始终置顶"
+                                       Foreground="{StaticResource TextBrush}"
+                                       FontSize="12" />
+                            <CheckBox HorizontalAlignment="Right"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding Settings.AlwaysOnTop, UpdateSourceTrigger=PropertyChanged}"
+                                      Style="{StaticResource SettingToggleStyle}" />
+                        </Grid>
+
+                        <Grid Height="34">
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="开机自启"
+                                       Foreground="{StaticResource TextBrush}"
+                                       FontSize="12" />
+                            <CheckBox HorizontalAlignment="Right"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding Settings.LaunchAtStartup, UpdateSourceTrigger=PropertyChanged}"
+                                      Style="{StaticResource SettingToggleStyle}" />
+                        </Grid>
+
+                        <Grid Height="45"
+                              Margin="0,2,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid>
+                                <TextBlock Text="透明度"
+                                           Foreground="{StaticResource TextBrush}"
+                                           FontSize="12" />
+                                <TextBlock HorizontalAlignment="Right"
+                                           Text="{Binding Settings.Opacity, StringFormat={}{0:P0}}"
+                                           Foreground="#91B5FF"
+                                           FontFamily="Consolas"
+                                           FontSize="11" />
+                            </Grid>
+                            <Slider Grid.Row="1"
+                                    Margin="0,5,0,0"
+                                    Minimum="0.45"
+                                    Maximum="1"
+                                    TickFrequency="0.05"
+                                    IsMoveToPointEnabled="True"
+                                    Value="{Binding Settings.Opacity, UpdateSourceTrigger=PropertyChanged}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Popup>
+
+            <ResizeGrip Grid.RowSpan="3"
+                        Width="16"
+                        Height="16"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Cursor="SizeNWSE"
+                        Foreground="#7187B0" />
         </Grid>
     </Border>
 </Window>

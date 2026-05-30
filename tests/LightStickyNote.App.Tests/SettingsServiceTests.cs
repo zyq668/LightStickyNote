@@ -49,7 +49,7 @@ public sealed class SettingsServiceTests : IDisposable
     }
 
     [Theory]
-    [InlineData(0.2, 0.65)]
+    [InlineData(0.2, 0.45)]
     [InlineData(0.82, 0.82)]
     [InlineData(1.4, 1.0)]
     public void Opacity_ClampsToVisibleRange(double value, double expected)

@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Input;
 using LightStickyNote.App.ViewModels;
 
 namespace LightStickyNote.App;
@@ -56,5 +57,24 @@ public partial class MainWindow : Window
         e.Handled = true;
         await ViewModel.AddTaskFromInputAsync();
         NewTaskTextBox.Focus();
+    }
+
+    private void Header_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.LeftButton == MouseButtonState.Pressed)
+        {
+            DragMove();
+        }
+    }
+
+    private void SettingsButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        SettingsPopup.IsOpen = !SettingsPopup.IsOpen;
+    }
+
+    private void HideToTrayButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        SettingsPopup.IsOpen = false;
+        Hide();
     }
 }
