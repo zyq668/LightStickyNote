@@ -28,7 +28,7 @@ public sealed class AppSettings : ObservableObject
     public double Opacity
     {
         get => _opacity;
-        set => SetProperty(ref _opacity, value);
+        set => SetProperty(ref _opacity, Math.Clamp(value, 0.65, 1.0));
     }
 
     public bool MinimizeToTrayOnClose

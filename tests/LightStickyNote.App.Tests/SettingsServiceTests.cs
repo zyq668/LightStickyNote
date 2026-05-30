@@ -48,6 +48,20 @@ public sealed class SettingsServiceTests : IDisposable
         Assert.Equal(0.9, reloaded.Opacity);
     }
 
+    [Theory]
+    [InlineData(0.2, 0.65)]
+    [InlineData(0.82, 0.82)]
+    [InlineData(1.4, 1.0)]
+    public void Opacity_ClampsToVisibleRange(double value, double expected)
+    {
+        var settings = new AppSettings
+        {
+            Opacity = value
+        };
+
+        Assert.Equal(expected, settings.Opacity);
+    }
+
     public void Dispose()
     {
         try
