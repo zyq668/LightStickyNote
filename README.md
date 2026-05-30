@@ -17,7 +17,7 @@ LightStickyNote 是一个面向 Windows 桌面的轻量便签工具。
 - **托盘驻留**：支持从系统托盘显示、隐藏和退出应用。
 - **极简界面**：无边框石墨玻璃风格，主界面只保留任务和快速输入。
 - **集中设置**：点击右上角齿轮后，可以开启或关闭置顶、开机自启动，并调节透明度。
-- **实时透明度**：可以在 `45%` 到 `100%` 之间调节窗口透明度，设置会自动保存。
+- **玻璃透明度**：可以在 `45%` 到 `100%` 之间调节石墨面板透明度，桌面内容会真实透出，文字和按钮保持清晰。
 - **本地存储**：数据保存在本机 SQLite 文件中，不依赖云服务。
 
 ## 适合什么场景
@@ -83,6 +83,18 @@ dotnet build .\LightStickyNote.sln -c Debug
 dotnet run --project .\src\LightStickyNote.App\LightStickyNote.App.csproj -c Debug
 ```
 
+## 生成便携分发包
+
+运行发布脚本：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\Publish-Portable.ps1
+```
+
+脚本会在 `artifacts` 目录生成 Windows x64 自包含单文件版本和对应 ZIP。接收方无需安装 .NET，解压后直接双击 `LightStickyNote.App.exe` 即可运行。
+
+便携版本会在 EXE 同级目录创建 `user-data` 文件夹保存 SQLite 数据库和 JSON 配置。移动 EXE 时，请一起保留该文件夹。
+
 ## 开机自启动
 
 点击应用右上角齿轮后，悬浮设置卡片中提供了 `开机自启动` 开关。
@@ -112,5 +124,5 @@ Remove-Item -Recurse -Force .\src\LightStickyNote.App\bin\Debug\net8.0-windows\u
 - 历史归档和操作记录
 - 标签和筛选
 - 快捷键新增任务
-- 更正式的安装包
+- 带卸载入口的正式安装包
 - 通过 `SummaryService` 接入 AI 总结能力

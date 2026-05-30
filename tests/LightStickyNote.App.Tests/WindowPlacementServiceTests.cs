@@ -9,7 +9,7 @@ namespace LightStickyNote.App.Tests;
 public sealed class WindowPlacementServiceTests
 {
     [Fact]
-    public void Apply_PreservesLiveBindingsForVisualSettings()
+    public void Apply_PreservesTopmostBinding_WithoutChangingWindowOpacity()
     {
         Exception? capturedException = null;
         var thread = new Thread(() =>
@@ -23,13 +23,10 @@ public sealed class WindowPlacementServiceTests
                 };
                 var window = new Window
                 {
-                    DataContext = settings
+                    DataContext = settings,
+                    Opacity = 1.0
                 };
 
-                BindingOperations.SetBinding(
-                    window,
-                    UIElement.OpacityProperty,
-                    new Binding(nameof(AppSettings.Opacity)));
                 BindingOperations.SetBinding(
                     window,
                     Window.TopmostProperty,
@@ -40,9 +37,8 @@ public sealed class WindowPlacementServiceTests
                 settings.Opacity = 0.72;
                 settings.AlwaysOnTop = false;
 
-                Assert.True(BindingOperations.IsDataBound(window, UIElement.OpacityProperty));
                 Assert.True(BindingOperations.IsDataBound(window, Window.TopmostProperty));
-                Assert.Equal(0.72, window.Opacity);
+                Assert.Equal(1.0, window.Opacity);
                 Assert.False(window.Topmost);
             }
             catch (Exception ex)

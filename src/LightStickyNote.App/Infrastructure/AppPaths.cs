@@ -18,6 +18,8 @@ public sealed class AppPaths
 
     public required string LauncherScriptPath { get; init; }
 
+    public required string ExecutableFilePath { get; init; }
+
     public required string StartupDirectory { get; init; }
 
     public static AppPaths ForCurrentExecutable()
@@ -35,6 +37,7 @@ public sealed class AppPaths
             SettingsFilePath = Path.Combine(dataDirectory, "appsettings.json"),
             RunScriptPath = Path.Combine(projectRootDirectory, "tools", "Run.ps1"),
             LauncherScriptPath = Path.Combine(projectRootDirectory, "Launch-LightStickyNote.cmd"),
+            ExecutableFilePath = Environment.ProcessPath ?? Path.Combine(baseDirectory, "LightStickyNote.App.exe"),
             StartupDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Startup)
         };
     }

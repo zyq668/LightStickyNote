@@ -10,7 +10,6 @@ public sealed class WindowPlacementService
         window.Width = note.Width > 0 ? note.Width : settings.DefaultWidth;
         window.Height = note.Height > 0 ? note.Height : settings.DefaultHeight;
         window.SetCurrentValue(Window.TopmostProperty, settings.AlwaysOnTop);
-        window.SetCurrentValue(UIElement.OpacityProperty, settings.Opacity);
 
         var workArea = SystemParameters.WorkArea;
         var left = note.PositionX ?? Math.Max(workArea.Left, workArea.Right - window.Width - settings.RightMargin);

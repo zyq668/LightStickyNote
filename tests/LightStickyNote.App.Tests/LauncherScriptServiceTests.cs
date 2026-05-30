@@ -24,7 +24,7 @@ public sealed class LauncherScriptServiceTests : IDisposable
         var runScriptPath = Path.Combine(_rootDirectory, "tools", "Run.ps1");
         Directory.CreateDirectory(Path.GetDirectoryName(runScriptPath)!);
         await File.WriteAllTextAsync(runScriptPath, "Write-Host test");
-        var service = new LauncherScriptService(scriptPath, runScriptPath);
+        var service = new LauncherScriptService(scriptPath, runScriptPath, "LightStickyNote.App.exe");
 
         await service.EnsureLauncherScriptAsync();
 
@@ -32,6 +32,22 @@ public sealed class LauncherScriptServiceTests : IDisposable
         var content = await File.ReadAllTextAsync(scriptPath);
         Assert.Contains("Run.ps1", content);
         Assert.Contains("powershell", content, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task EnsureLauncherScriptAsync_StartsExecutable_WhenRunScriptMissing()
+    {
+        var scriptPath = Path.Combine(_rootDirectory, "Launch-LightStickyNote.cmd");
+        var runScriptPath = Path.Combine(_rootDirectory, "tools", "Run.ps1");
+        var executablePath = Path.Combine(_rootDirectory, "LightStickyNote.exe");
+        var service = new LauncherScriptService(scriptPath, runScriptPath, executablePath);
+
+        await service.EnsureLauncherScriptAsync();
+
+        var content = await File.ReadAllTextAsync(scriptPath);
+        Assert.Contains("start", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(executablePath, content);
+        Assert.DoesNotContain("powershell", content, StringComparison.OrdinalIgnoreCase);
     }
 
     public void Dispose()

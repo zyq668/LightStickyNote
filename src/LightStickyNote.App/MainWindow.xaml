@@ -12,16 +12,11 @@
         MinHeight="360"
         WindowStyle="None"
         ResizeMode="CanResizeWithGrip"
-        Background="#0B1018"
+        AllowsTransparency="True"
+        Background="Transparent"
         FontFamily="Microsoft YaHei UI"
-        Opacity="{Binding Settings.Opacity}"
         Topmost="{Binding Settings.AlwaysOnTop}">
     <Window.Resources>
-        <LinearGradientBrush x:Key="PanelBackground" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#FF111925" Offset="0" />
-            <GradientStop Color="#FF0A0F17" Offset="1" />
-        </LinearGradientBrush>
-
         <SolidColorBrush x:Key="TextBrush" Color="#DCE7FF" />
         <SolidColorBrush x:Key="MutedTextBrush" Color="#8494B4" />
         <SolidColorBrush x:Key="AccentBrush" Color="#91B5FF" />
@@ -186,9 +181,16 @@
         </Style>
     </Window.Resources>
 
-    <Border Background="{StaticResource PanelBackground}"
-            BorderBrush="#65455C83"
+    <Border BorderBrush="#65455C83"
             BorderThickness="1">
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0,0"
+                                 EndPoint="1,1"
+                                 Opacity="{Binding Settings.Opacity}">
+                <GradientStop Color="#FF111925" Offset="0" />
+                <GradientStop Color="#FF0A0F17" Offset="1" />
+            </LinearGradientBrush>
+        </Border.Background>
         <Grid Margin="14,10,14,14">
             <Grid.RowDefinitions>
                 <RowDefinition Height="34" />

@@ -26,7 +26,10 @@ public partial class App : System.Windows.Application
 
         var settingsService = new SettingsService(appPaths.SettingsFilePath);
         var settings = await settingsService.LoadAsync();
-        var launcherScriptService = new LauncherScriptService(appPaths.LauncherScriptPath, appPaths.RunScriptPath);
+        var launcherScriptService = new LauncherScriptService(
+            appPaths.LauncherScriptPath,
+            appPaths.RunScriptPath,
+            appPaths.ExecutableFilePath);
         var startupRegistrationService = new StartupRegistrationService(appPaths.StartupDirectory, appPaths.LauncherScriptPath);
         var databaseInitializer = new DatabaseInitializer(appPaths.DatabaseFilePath);
 
