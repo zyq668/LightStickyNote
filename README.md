@@ -1,6 +1,38 @@
 # LightStickyNote
 
-一个面向 Windows 桌面的轻量便签 MVP。它默认以右侧常驻便签窗口启动，支持任务快速新增、编辑、完成、取消完成、删除、自动保存、托盘驻留，以及现在可直接双击启动和设置开机自启动。
+LightStickyNote 是一个面向 Windows 桌面的轻量便签工具。
+
+它不追求复杂的笔记管理，而是专注于日常最常用的动作：快速记录、随手编辑、勾选完成、自动保存。窗口可以常驻桌面右侧并保持置顶，适合用来放置今日任务、临时提醒和简单待办事项。
+
+## 软件特点
+
+- **非常轻量**：使用 C#、WPF 和 SQLite 构建，不依赖 Electron，也不需要启动额外的数据库服务。
+- **快速记录**：在底部输入任务后按 `Enter` 即可新增待办。
+- **便捷编辑**：任务文本可以直接在便签中修改，不需要打开额外弹窗。
+- **完成删除线**：勾选任务后会自动显示删除线，也可以随时取消完成状态。
+- **一键删除**：不再需要的任务可以直接移除。
+- **自动保存**：任务内容、完成状态、窗口位置和窗口大小会自动保存。
+- **重启恢复**：关闭并重新启动后，之前记录的内容仍然存在。
+- **桌面置顶**：便签默认显示在屏幕右侧，并支持始终置顶。
+- **托盘驻留**：支持从系统托盘显示、隐藏和退出应用。
+- **开机自启动**：可以在便签底部直接开启或关闭开机自启动。
+- **本地存储**：数据保存在本机 SQLite 文件中，不依赖云服务。
+
+## 适合什么场景
+
+- 放在桌面右侧记录今天要完成的事项
+- 临时保存容易忘记的小任务
+- 在工作过程中快速勾选已经完成的内容
+- 希望使用简单便签，不想安装复杂任务管理软件
+
+## 界面操作
+
+1. 在窗口底部输入任务，按 `Enter` 新增。
+2. 直接点击任务文字进行编辑。
+3. 勾选任务左侧复选框，将任务标记为已完成。
+4. 已完成任务会显示删除线，再次取消勾选即可恢复。
+5. 点击任务右侧的 `×` 删除任务。
+6. 使用底部复选框控制始终置顶和开机自启动。
 
 ## 技术栈
 
@@ -10,9 +42,11 @@
 - JSON 配置
 - 接近 MVVM 的分层结构
 
-## 为什么选 WPF + SQLite
+## 为什么选择 WPF + SQLite
 
-WPF 是 Windows 原生桌面方案，内存占用和启动成本明显低于 Electron，适合做长期常驻的轻量工具。SQLite 是本地单文件数据库，适合离线自动保存，也方便后续扩展多便签、历史和标签，而不需要引入服务端数据库。
+WPF 是 Windows 原生桌面方案，启动成本和资源占用明显低于 Electron，适合做长期常驻的轻量工具。
+
+SQLite 是本地单文件数据库，适合离线自动保存，也方便后续扩展多便签、历史记录和标签功能，不需要引入服务端数据库。
 
 ## 项目结构
 
@@ -22,21 +56,18 @@ D:\CodexProjects\LightStickyNote
 ├─ tests
 ├─ docs
 ├─ tools
-├─ data-sample
 ├─ Launch-LightStickyNote.cmd
 ├─ 启动便签.cmd
 └─ README.md
 ```
 
-## 构建前准备
+## 构建环境
 
-本项目把 .NET SDK 和 NuGet 缓存放在 D 盘：
+当前开发环境把 .NET SDK 和 NuGet 缓存放在 D 盘：
 
 - `D:\DevTools\dotnet`
 - `D:\DevTools\nuget-packages`
 - `D:\DevTools\dotnet-home`
-
-如果直接用脚本，环境变量会自动设置好。
 
 ## 如何构建
 
@@ -47,17 +78,11 @@ powershell -ExecutionPolicy Bypass -File .\tools\Build.ps1
 
 ## 如何运行
 
-推荐的两种方式：
-
-### 方式 1：直接双击
-
-双击项目根目录下的：
+最简单的方式是双击项目根目录下的：
 
 `D:\CodexProjects\LightStickyNote\启动便签.cmd`
 
-中文脚本会调用纯 ASCII 文件名的 `Launch-LightStickyNote.cmd`，这样开机自启动不会受 Windows 命令行代码页影响。
-
-### 方式 2：命令行启动
+也可以使用命令行：
 
 ```powershell
 cd D:\CodexProjects\LightStickyNote
@@ -68,54 +93,32 @@ powershell -ExecutionPolicy Bypass -File .\tools\Run.ps1
 
 应用底部提供了 `开机自启动` 复选框。
 
-- 勾选后：程序会在当前用户的 Windows Startup 目录下写入一个很小的启动脚本
-- 取消勾选后：对应启动脚本会被移除
+- 勾选后，程序会在当前用户的 Windows Startup 目录中写入一个轻量启动脚本。
+- 取消勾选后，对应启动脚本会自动移除。
 
-Startup 目录中的脚本会间接调用项目根目录的 `Launch-LightStickyNote.cmd`，因此只要项目仍在 `D:\CodexProjects\LightStickyNote`，开机自启动就能正常工作。
+## 数据文件
 
-## 数据库文件在哪里
-
-运行后会生成在：
+数据库文件：
 
 `D:\CodexProjects\LightStickyNote\src\LightStickyNote.App\bin\Debug\net8.0-windows\user-data\lightstickynote.db`
 
-## 配置文件在哪里
-
-运行后会生成在：
+配置文件：
 
 `D:\CodexProjects\LightStickyNote\src\LightStickyNote.App\bin\Debug\net8.0-windows\user-data\appsettings.json`
 
-## 如何清空测试数据
+## 清空测试数据
 
 ```powershell
 cd D:\CodexProjects\LightStickyNote
 powershell -ExecutionPolicy Bypass -File .\tools\Clear-Data.ps1
 ```
 
-## 当前已完成功能
+## 后续扩展方向
 
-- 单主便签窗口启动
-- 默认靠右显示
-- 始终置顶开关
-- 开机自启动开关
-- 双击 `启动便签.cmd` 启动应用
-- 快速新增任务
-- 任务文本内联编辑
-- 完成/取消完成
-- 完成任务删除线显示
-- 删除任务
-- 自动保存到 SQLite
-- 重启后恢复任务内容
-- 重启后恢复窗口位置和大小
-- 托盘显示、隐藏、退出
-- 数据库自动初始化和建表
-
-## 后续可扩展方向
-
-- 多便签 UI
-- 历史归档和操作审计
+- 多便签
+- 历史归档和操作记录
 - 标签和筛选
 - 快捷键新增任务
 - 透明度调节 UI
-- 更正式的安装包或发布版目录
+- 更正式的安装包
 - 通过 `SummaryService` 接入 AI 总结能力
