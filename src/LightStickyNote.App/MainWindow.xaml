@@ -164,6 +164,71 @@
             </Setter>
         </Style>
 
+        <Style x:Key="DialogButtonStyle" TargetType="Button">
+            <Setter Property="MinWidth" Value="68" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Padding" Value="12,0" />
+            <Setter Property="Background" Value="#51283A54" />
+            <Setter Property="BorderBrush" Value="#76516D98" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="#C9D9F8" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="DialogButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="DialogButtonBorder" Property="Background" Value="#73405A82" />
+                                <Setter TargetName="DialogButtonBorder" Property="BorderBrush" Value="#A783A9E4" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="DialogButtonBorder" Property="Background" Value="#8A4B6996" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="DangerDialogButtonStyle"
+               BasedOn="{StaticResource DialogButtonStyle}"
+               TargetType="Button">
+            <Setter Property="Background" Value="#573C2635" />
+            <Setter Property="BorderBrush" Value="#8A6D3C52" />
+            <Setter Property="Foreground" Value="#FFB2C0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="DangerButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="DangerButtonBorder" Property="Background" Value="#804B2F41" />
+                                <Setter TargetName="DangerButtonBorder" Property="BorderBrush" Value="#B9864C63" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="DangerButtonBorder" Property="Background" Value="#9B5B394D" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="SettingToggleStyle" TargetType="CheckBox">
             <Setter Property="Width" Value="36" />
             <Setter Property="Height" Value="18" />
@@ -261,6 +326,7 @@
                                    FontSize="14" />
                     </Button>
                     <Button Click="HideToTrayButton_OnClick"
+                            AutomationProperties.Name="隐藏到托盘"
                             Style="{StaticResource IconButtonStyle}"
                             ToolTip="隐藏到托盘">
                         <TextBlock Text="×"
@@ -315,6 +381,7 @@
                                         <Button x:Name="DeleteButton"
                                                 DockPanel.Dock="Right"
                                                 Margin="7,0,0,0"
+                                                AutomationProperties.Name="删除任务"
                                                 Click="DeleteButton_OnClick"
                                                 Style="{StaticResource DeleteButtonStyle}">
                                             <TextBlock Text="×"
@@ -460,6 +527,59 @@
                     </StackPanel>
                 </Border>
             </Popup>
+
+            <Grid x:Name="DeleteConfirmationOverlay"
+                  Grid.RowSpan="3"
+                  Panel.ZIndex="20"
+                  Background="#B20A0F17"
+                  Visibility="Collapsed">
+                <Border Width="276"
+                        Padding="16"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Background="#F21A2433"
+                        BorderBrush="#9B6D85AB"
+                        BorderThickness="1"
+                        CornerRadius="13">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="22"
+                                          Opacity="0.55"
+                                          ShadowDepth="5"
+                                          Color="#000000" />
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="删除这条任务？"
+                                   Foreground="#E5EDFF"
+                                   FontSize="14"
+                                   FontWeight="Bold" />
+                        <TextBlock x:Name="DeleteTaskPreviewTextBlock"
+                                   MaxHeight="54"
+                                   Margin="0,9,0,0"
+                                   TextTrimming="CharacterEllipsis"
+                                   TextWrapping="Wrap"
+                                   Foreground="#91A4C8"
+                                   FontSize="12" />
+                        <TextBlock Margin="0,8,0,0"
+                                   Text="删除后无法恢复"
+                                   Foreground="#D4869A"
+                                   FontSize="11" />
+                        <StackPanel Margin="0,15,0,0"
+                                    HorizontalAlignment="Right"
+                                    Orientation="Horizontal">
+                            <Button x:Name="CancelDeleteButton"
+                                    Margin="0,0,8,0"
+                                    Click="CancelDeleteButton_OnClick"
+                                    Content="取消"
+                                    IsCancel="True"
+                                    IsDefault="True"
+                                    Style="{StaticResource DialogButtonStyle}" />
+                            <Button Click="ConfirmDeleteButton_OnClick"
+                                    Content="删除"
+                                    Style="{StaticResource DangerDialogButtonStyle}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
 
             <ResizeGrip Grid.RowSpan="3"
                         Width="16"

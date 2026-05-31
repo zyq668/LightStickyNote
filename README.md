@@ -10,7 +10,8 @@ LightStickyNote 是一个面向 Windows 桌面的轻量便签工具。
 - **快速记录**：在底部输入任务后按 `Enter` 即可新增待办。
 - **便捷编辑**：任务文本可以直接在便签中修改，不需要打开额外弹窗。
 - **完成删除线**：勾选任务后会自动显示删除线，也可以随时取消完成状态。
-- **一键删除**：不再需要的任务可以直接移除。
+- **安全删除**：点击删除后会在便签内部弹出确认卡片，减少误触删除。
+- **轻量进度反馈**：顶部显示剩余任务、完成反馈和细进度条，勾选后会平滑更新。
 - **自动保存**：任务内容、完成状态、窗口位置和窗口大小会自动保存。
 - **重启恢复**：关闭并重新启动后，之前记录的内容仍然存在。
 - **桌面置顶**：便签默认显示在屏幕右侧，并支持始终置顶。
@@ -33,7 +34,7 @@ LightStickyNote 是一个面向 Windows 桌面的轻量便签工具。
 2. 直接点击任务文字进行编辑。
 3. 勾选任务左侧复选框，将任务标记为已完成。
 4. 已完成任务会显示删除线，再次取消勾选即可恢复。
-5. 点击任务右侧的 `×` 删除任务。
+5. 点击任务右侧的 `×`，在便签内部确认后删除任务。
 6. 点击右上角齿轮，打开悬浮设置卡片。
 7. 在设置卡片中控制始终置顶、开机自启动和窗口透明度。
 
@@ -91,7 +92,12 @@ dotnet run --project .\src\LightStickyNote.App\LightStickyNote.App.csproj -c Deb
 powershell -ExecutionPolicy Bypass -File .\tools\Publish-Portable.ps1
 ```
 
-脚本会在 `artifacts` 目录生成 Windows x64 自包含单文件版本和对应 ZIP。接收方无需安装 .NET，解压后直接双击 `LightStickyNote.App.exe` 即可运行。
+脚本会生成以下 Windows x64 自包含单文件版本和对应 ZIP：
+
+- `artifacts\LightStickyNote-win-x64-portable\LightStickyNote.App.exe`
+- `artifacts\LightStickyNote-win-x64-portable.zip`
+
+接收方无需安装 .NET。发送 ZIP 即可，对方解压后直接双击 `LightStickyNote.App.exe` 运行。
 
 便携版本会在 EXE 同级目录创建 `user-data` 文件夹保存 SQLite 数据库和 JSON 配置。移动 EXE 时，请一起保留该文件夹。
 

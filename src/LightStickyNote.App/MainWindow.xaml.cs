@@ -9,6 +9,7 @@ namespace LightStickyNote.App;
 public partial class MainWindow : Window
 {
     private double _displayedCompletionPercentage;
+    private TaskItemViewModel? _pendingDeleteItem;
 
     public bool AllowClose { get; set; }
 
@@ -90,18 +91,36 @@ public partial class MainWindow : Window
             return;
         }
 
-        var result = System.Windows.MessageBox.Show(
-            this,
-            $"确定删除这个任务吗？\n\n{item.Text}",
-            "删除任务",
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Warning,
-            MessageBoxResult.No);
+        _pendingDeleteItem = item;
+        DeleteTaskPreviewTextBlock.Text = item.Text;
+        DeleteConfirmationOverlay.Visibility = Visibility.Visible;
+        DeleteConfirmationOverlay.BeginAnimation(
+            OpacityProperty,
+            new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(140)));
+        CancelDeleteButton.Focus();
+    }
 
-        if (result == MessageBoxResult.Yes)
+    private void CancelDeleteButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        CloseDeleteConfirmation();
+    }
+
+    private void ConfirmDeleteButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_pendingDeleteItem is { } item)
         {
             ViewModel.DeleteItemCommand.Execute(item);
         }
+
+        CloseDeleteConfirmation();
+    }
+
+    private void CloseDeleteConfirmation()
+    {
+        DeleteConfirmationOverlay.Visibility = Visibility.Collapsed;
+        DeleteConfirmationOverlay.BeginAnimation(OpacityProperty, null);
+        DeleteTaskPreviewTextBlock.Text = string.Empty;
+        _pendingDeleteItem = null;
     }
 
     private void TaskCheckBox_OnChecked(object sender, RoutedEventArgs e)
