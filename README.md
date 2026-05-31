@@ -136,3 +136,10 @@ Remove-Item -Recurse -Force .\src\LightStickyNote.App\bin\Debug\net8.0-windows\u
 - 历史归档和操作记录
 - 标签和筛选
 - 通过 `SummaryService` 接入 AI 总结能力
+
+
+## 应用图片示例
+![3c6d6a8713c42110540a7cbeb1906c60.png](https://raw.gitcode.com/user-images/assets/9992847/43c9e04d-c347-409a-827f-97388c0f97ba/3c6d6a8713c42110540a7cbeb1906c60.png '3c6d6a8713c42110540a7cbeb1906c60.png')
+![4dbdbf3a1dc6c85d0f17058ba2311837.png](https://raw.gitcode.com/user-images/assets/9992847/cde3c95d-5a1f-47cd-b274-f0525fe3c418/4dbdbf3a1dc6c85d0f17058ba2311837.png '4dbdbf3a1dc6c85d0f17058ba2311837.png')
+![image.png](https://raw.gitcode.com/user-images/assets/9992847/904b745b-9127-440f-8594-4d2526721e11/image.png 'image.png')
+![d234166391193ddfd73f634468b8909d.png](https://raw.gitcode.com/user-images/assets/9992847/757b5cc1-d9a7-470e-b8ef-4c37973e8028/d234166391193ddfd73f634468b8909d.png 'd234166391193ddfd73f634468b8909d.png')
