@@ -23,6 +23,25 @@
         <SolidColorBrush x:Key="CardBrush" Color="#B2192332" />
         <SolidColorBrush x:Key="CardBorderBrush" Color="#462F405D" />
 
+        <Style x:Key="HeaderProgressBarStyle" TargetType="ProgressBar">
+            <Setter Property="Background" Value="#3925354B" />
+            <Setter Property="Foreground" Value="#91B5FF" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Grid x:Name="PART_Track">
+                            <Border Background="{TemplateBinding Background}"
+                                    CornerRadius="2" />
+                            <Border x:Name="PART_Indicator"
+                                    HorizontalAlignment="Left"
+                                    Background="{TemplateBinding Foreground}"
+                                    CornerRadius="2" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="IconButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="30" />
             <Setter Property="Height" Value="30" />
@@ -206,24 +225,28 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Orientation="Horizontal"
-                            VerticalAlignment="Center">
-                    <Ellipse Width="7"
-                             Height="7"
-                             Margin="2,0,8,0"
-                             Fill="#91B5FF" />
-                    <TextBlock VerticalAlignment="Center"
-                               Text="STICKY // ACTIVE"
-                               Foreground="#A7C0F5"
-                               FontFamily="Consolas"
-                               FontSize="11"
-                               FontWeight="Bold" />
-                    <TextBlock Margin="10,0,0,0"
-                               VerticalAlignment="Center"
-                               Text="{Binding Items.Count, StringFormat={}{0:00}}"
-                               Foreground="#5F7090"
-                               FontFamily="Consolas"
-                               FontSize="11" />
+                <StackPanel VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center"
+                                   Text="{Binding PendingCount, StringFormat=还有 {0} 项}"
+                                   Foreground="#BFD3FF"
+                                   FontSize="12"
+                                   FontWeight="Bold" />
+                        <TextBlock x:Name="FeedbackTextBlock"
+                                   Margin="10,0,0,0"
+                                   VerticalAlignment="Center"
+                                   Text="{Binding FeedbackText}"
+                                   Foreground="#7894A5"
+                                   FontSize="11" />
+                    </StackPanel>
+                    <ProgressBar x:Name="CompletionProgress"
+                                 Width="190"
+                                 Height="3"
+                                 Margin="0,5,0,0"
+                                 HorizontalAlignment="Left"
+                                 Maximum="100"
+                                 Value="{Binding CompletionPercentage, Mode=OneWay}"
+                                 Style="{StaticResource HeaderProgressBarStyle}" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="1"
@@ -262,12 +285,19 @@
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
-                    <TextBlock HorizontalAlignment="Center"
-                               VerticalAlignment="Center"
-                               Text="NO ACTIVE TASKS"
-                               Foreground="#5E7092"
-                               FontFamily="Consolas"
-                               FontSize="11" />
+                    <StackPanel HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <TextBlock HorizontalAlignment="Center"
+                                   Text="今天很轻松"
+                                   Foreground="#A7C0F5"
+                                   FontSize="14"
+                                   FontWeight="Bold" />
+                        <TextBlock Margin="0,7,0,0"
+                                   HorizontalAlignment="Center"
+                                   Text="添加第一条任务，慢慢来"
+                                   Foreground="#5E7092"
+                                   FontSize="11" />
+                    </StackPanel>
                 </Border>
 
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -285,8 +315,7 @@
                                         <Button x:Name="DeleteButton"
                                                 DockPanel.Dock="Right"
                                                 Margin="7,0,0,0"
-                                                Command="{Binding DataContext.DeleteItemCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                CommandParameter="{Binding}"
+                                                Click="DeleteButton_OnClick"
                                                 Style="{StaticResource DeleteButtonStyle}">
                                             <TextBlock Text="×"
                                                        FontFamily="Segoe UI"
@@ -295,6 +324,8 @@
                                         <CheckBox DockPanel.Dock="Left"
                                                   Margin="0,3,9,0"
                                                   VerticalAlignment="Top"
+                                                  Checked="TaskCheckBox_OnChecked"
+                                                  Unchecked="TaskCheckBox_OnUnchecked"
                                                   IsChecked="{Binding IsDone, UpdateSourceTrigger=PropertyChanged}"
                                                   Style="{StaticResource TaskCheckBoxStyle}" />
                                         <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"

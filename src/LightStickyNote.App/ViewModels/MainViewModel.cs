@@ -66,6 +66,14 @@ public sealed class MainViewModel : ObservableObject
 
     public string NoteTitle => _note.Title;
 
+    public int PendingCount => TaskSummary.FromItems(Items).PendingCount;
+
+    public int CompletedCount => TaskSummary.FromItems(Items).CompletedCount;
+
+    public int CompletionPercentage => TaskSummary.FromItems(Items).CompletionPercentage;
+
+    public string FeedbackText => TaskSummary.FromItems(Items).FeedbackText;
+
     public string NewTaskText
     {
         get => _newTaskText;
@@ -145,6 +153,8 @@ public sealed class MainViewModel : ObservableObject
 
     private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
+        NotifyTaskSummaryChanged();
+
         if (_isInitialized)
         {
             QueueSave("任务列表已更新");
@@ -153,7 +163,16 @@ public sealed class MainViewModel : ObservableObject
 
     private void OnTaskItemChanged(object? sender, EventArgs e)
     {
+        NotifyTaskSummaryChanged();
         QueueSave("内容已自动保存");
+    }
+
+    private void NotifyTaskSummaryChanged()
+    {
+        OnPropertyChanged(nameof(PendingCount));
+        OnPropertyChanged(nameof(CompletedCount));
+        OnPropertyChanged(nameof(CompletionPercentage));
+        OnPropertyChanged(nameof(FeedbackText));
     }
 
     private void QueueSave(string status)
