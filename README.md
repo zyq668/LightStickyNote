@@ -107,21 +107,6 @@ powershell -ExecutionPolicy Bypass -File .\tools\Publish-Portable.ps1
 
 便携版本会在 EXE 同级目录创建 `user-data` 文件夹保存 SQLite 数据库和 JSON 配置。移动 EXE 时，请一起保留该文件夹。
 
-## 如何分享给别人下载试用
-
-推荐方式：
-- 保持 `artifacts` 目录不进 Git 历史。
-- 每次双击 `一键打包便携版.cmd` 后，把 `artifacts\LightStickyNote-win-x64-portable.zip` 上传到代码托管平台的 Release 或发行版附件。
-- 这样别人可以直接下载 ZIP 试用，又不会让仓库历史越来越大。
-
-如果你确实想把打包产物也提交到 Git 仓库：
-- 新建一个专门目录，例如 `downloads/` 或 `release-files/`。
-- 把生成好的 ZIP 复制进去，再执行 `git add downloads/LightStickyNote-win-x64-portable.zip`。
-- 不要直接提交 `artifacts/` 整个目录，因为它本来就是构建输出目录，容易混入重复文件。
-- 这种方式虽然简单，但仓库体积会持续变大，只建议偶尔使用。
-
-更完整的 GitCode 发行版步骤见 [docs/发布发行版.md](docs/发布发行版.md)。
-
 ## 开机自启动
 
 点击应用右上角齿轮后，悬浮设置卡片中提供了 `开机自启动` 开关。
@@ -150,6 +135,4 @@ Remove-Item -Recurse -Force .\src\LightStickyNote.App\bin\Debug\net8.0-windows\u
 - 多便签
 - 历史归档和操作记录
 - 标签和筛选
-- 快捷键新增任务
-- 带卸载入口的正式安装包
 - 通过 `SummaryService` 接入 AI 总结能力
