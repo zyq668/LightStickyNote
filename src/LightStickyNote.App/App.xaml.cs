@@ -92,18 +92,12 @@ public partial class App : System.Windows.Application
             return;
         }
 
-        if (!_mainWindow.IsVisible)
-        {
-            _mainWindow.Show();
-        }
-
-        _mainWindow.WindowState = WindowState.Normal;
-        _mainWindow.Activate();
+        _mainWindow.ShowFromTray();
     }
 
     private void HideMainWindow()
     {
-        _mainWindow?.Hide();
+        _mainWindow?.HideToTray();
     }
 
     private async void ExitApplication()

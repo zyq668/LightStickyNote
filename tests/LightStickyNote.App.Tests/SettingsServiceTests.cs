@@ -62,6 +62,35 @@ public sealed class SettingsServiceTests : IDisposable
         Assert.Equal(expected, settings.Opacity);
     }
 
+    [Theory]
+    [InlineData(0, 2)]
+    [InlineData(3, 3)]
+    [InlineData(3.4, 3)]
+    [InlineData(20, 8)]
+    public void EdgeRevealWidth_ClampsToUsableRange(double value, double expected)
+    {
+        var settings = new AppSettings
+        {
+            EdgeRevealWidth = value
+        };
+
+        Assert.Equal(expected, settings.EdgeRevealWidth);
+    }
+
+    [Theory]
+    [InlineData(100, 300)]
+    [InlineData(900, 900)]
+    [InlineData(5000, 3000)]
+    public void EdgeHideDelayMilliseconds_ClampsToUsableRange(int value, int expected)
+    {
+        var settings = new AppSettings
+        {
+            EdgeHideDelayMilliseconds = value
+        };
+
+        Assert.Equal(expected, settings.EdgeHideDelayMilliseconds);
+    }
+
     public void Dispose()
     {
         try

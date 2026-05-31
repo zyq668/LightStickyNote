@@ -1,0 +1,19 @@
+<Window x:Class="LightStickyNote.App.EdgeRevealWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="3"
+        Height="300"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        ShowActivated="False"
+        ShowInTaskbar="False"
+        Topmost="True"
+        WindowStartupLocation="Manual"
+        WindowStyle="None">
+    <Border Background="#D88FB4FF"
+            BorderBrush="#F3BDD5FF"
+            BorderThickness="1,1,0,1"
+            CornerRadius="3,0,0,3"
+            Cursor="Hand" />
+</Window>

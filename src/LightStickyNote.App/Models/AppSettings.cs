@@ -12,6 +12,9 @@ public sealed class AppSettings : ObservableObject
     private double _defaultHeight = 640;
     private double _rightMargin = 18;
     private double _topMargin = 90;
+    private bool _edgeSnapEnabled = true;
+    private double _edgeRevealWidth = 3;
+    private int _edgeHideDelayMilliseconds = 900;
 
     public bool AlwaysOnTop
     {
@@ -59,5 +62,23 @@ public sealed class AppSettings : ObservableObject
     {
         get => _topMargin;
         set => SetProperty(ref _topMargin, value);
+    }
+
+    public bool EdgeSnapEnabled
+    {
+        get => _edgeSnapEnabled;
+        set => SetProperty(ref _edgeSnapEnabled, value);
+    }
+
+    public double EdgeRevealWidth
+    {
+        get => _edgeRevealWidth;
+        set => SetProperty(ref _edgeRevealWidth, Math.Round(Math.Clamp(value, 2, 8)));
+    }
+
+    public int EdgeHideDelayMilliseconds
+    {
+        get => _edgeHideDelayMilliseconds;
+        set => SetProperty(ref _edgeHideDelayMilliseconds, Math.Clamp(value, 300, 3000));
     }
 }

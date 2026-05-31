@@ -15,6 +15,7 @@
         AllowsTransparency="True"
         Background="Transparent"
         FontFamily="Microsoft YaHei UI"
+        UseLayoutRounding="True"
         Topmost="{Binding Settings.AlwaysOnTop}">
     <Window.Resources>
         <SolidColorBrush x:Key="TextBrush" Color="#DCE7FF" />
@@ -284,7 +285,10 @@
 
             <Grid Grid.Row="0"
                   Background="Transparent"
-                  MouseLeftButtonDown="Header_OnMouseLeftButtonDown">
+                  MouseLeftButtonDown="Header_OnMouseLeftButtonDown"
+                  MouseMove="Header_OnMouseMove"
+                  MouseLeftButtonUp="Header_OnMouseLeftButtonUp"
+                  LostMouseCapture="Header_OnLostMouseCapture">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -500,6 +504,17 @@
                                       Style="{StaticResource SettingToggleStyle}" />
                         </Grid>
 
+                        <Grid Height="34">
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="边缘吸附隐藏"
+                                       Foreground="{StaticResource TextBrush}"
+                                       FontSize="12" />
+                            <CheckBox HorizontalAlignment="Right"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding Settings.EdgeSnapEnabled, UpdateSourceTrigger=PropertyChanged}"
+                                      Style="{StaticResource SettingToggleStyle}" />
+                        </Grid>
+
                         <Grid Height="45"
                               Margin="0,2,0,0">
                             <Grid.RowDefinitions>
@@ -523,6 +538,86 @@
                                     TickFrequency="0.05"
                                     IsMoveToPointEnabled="True"
                                     Value="{Binding Settings.Opacity, UpdateSourceTrigger=PropertyChanged}" />
+                        </Grid>
+
+                        <Grid Height="45"
+                              Margin="0,5,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid>
+                                <TextBlock Text="边签宽度"
+                                           Foreground="{StaticResource TextBrush}"
+                                           FontSize="12" />
+                                <TextBlock HorizontalAlignment="Right"
+                                           Text="{Binding Settings.EdgeRevealWidth, StringFormat={}{0:F0} px}"
+                                           Foreground="#91B5FF"
+                                           FontFamily="Consolas"
+                                           FontSize="11" />
+                            </Grid>
+                            <Slider Grid.Row="1"
+                                    Margin="0,5,0,0"
+                                    Minimum="2"
+                                    Maximum="8"
+                                    TickFrequency="1"
+                                    IsSnapToTickEnabled="True"
+                                    IsMoveToPointEnabled="True"
+                                    Value="{Binding Settings.EdgeRevealWidth, UpdateSourceTrigger=PropertyChanged}" />
+                        </Grid>
+
+                        <Grid Height="24"
+                              Margin="0,2,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="宽度预览"
+                                       Foreground="#6F82A6"
+                                       FontSize="10" />
+                            <Border Grid.Column="1"
+                                    Width="62"
+                                    Height="16"
+                                    Margin="10,0,0,0"
+                                    HorizontalAlignment="Right"
+                                    Background="#22172233"
+                                    BorderBrush="#353E5678"
+                                    BorderThickness="1"
+                                    CornerRadius="8">
+                                <Grid HorizontalAlignment="Right">
+                                    <Rectangle Width="{Binding Settings.EdgeRevealWidth}"
+                                               RadiusX="7"
+                                               RadiusY="7"
+                                               HorizontalAlignment="Right"
+                                               Fill="#91B5FF" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <Grid Height="45"
+                              Margin="0,5,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid>
+                                <TextBlock Text="收起延迟"
+                                           Foreground="{StaticResource TextBrush}"
+                                           FontSize="12" />
+                                <TextBlock HorizontalAlignment="Right"
+                                           Text="{Binding Settings.EdgeHideDelayMilliseconds, StringFormat={}{0} ms}"
+                                           Foreground="#91B5FF"
+                                           FontFamily="Consolas"
+                                           FontSize="11" />
+                            </Grid>
+                            <Slider Grid.Row="1"
+                                    Margin="0,5,0,0"
+                                    Minimum="300"
+                                    Maximum="3000"
+                                    TickFrequency="100"
+                                    IsMoveToPointEnabled="True"
+                                    Value="{Binding Settings.EdgeHideDelayMilliseconds, UpdateSourceTrigger=PropertyChanged}" />
                         </Grid>
                     </StackPanel>
                 </Border>
