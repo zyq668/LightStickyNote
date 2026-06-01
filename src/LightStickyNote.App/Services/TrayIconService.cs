@@ -1,3 +1,4 @@
+using System.Windows;
 using Drawing = System.Drawing;
 using Forms = System.Windows.Forms;
 
@@ -8,11 +9,13 @@ public sealed class TrayIconService : IDisposable
     private readonly Forms.NotifyIcon _notifyIcon;
     private readonly Action _showWindow;
     private readonly Action _hideWindow;
+    private readonly Drawing.Icon? _appIcon;
 
     public TrayIconService(Action showWindow, Action hideWindow, Action exitApplication)
     {
         _showWindow = showWindow;
         _hideWindow = hideWindow;
+        _appIcon = LoadIcon();
 
         var menu = new Forms.ContextMenuStrip();
         menu.Items.Add("显示便签", null, (_, _) => _showWindow());
@@ -22,8 +25,8 @@ public sealed class TrayIconService : IDisposable
 
         _notifyIcon = new Forms.NotifyIcon
         {
-            Text = "Light Sticky Note",
-            Icon = Drawing.SystemIcons.Information,
+            Text = "LightStickyNote",
+            Icon = _appIcon ?? Drawing.SystemIcons.Information,
             Visible = true,
             ContextMenuStrip = menu
         };
@@ -35,5 +38,19 @@ public sealed class TrayIconService : IDisposable
     {
         _notifyIcon.Visible = false;
         _notifyIcon.Dispose();
+        _appIcon?.Dispose();
+    }
+
+    private static Drawing.Icon? LoadIcon()
+    {
+        try
+        {
+            var resource = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/Assets/AppIcon.ico"));
+            return resource is null ? null : new Drawing.Icon(resource.Stream);
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

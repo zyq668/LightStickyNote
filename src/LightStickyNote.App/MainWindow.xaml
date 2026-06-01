@@ -6,6 +6,7 @@
         xmlns:vm="clr-namespace:LightStickyNote.App.ViewModels"
         mc:Ignorable="d"
         Title="Light Sticky Note"
+        Icon="Assets/AppIcon.png"
         Width="360"
         Height="620"
         MinWidth="310"
