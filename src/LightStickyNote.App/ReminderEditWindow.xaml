@@ -85,6 +85,13 @@
             <Setter Property="Foreground" Value="#F3F8FF" />
         </Style>
 
+        <Style x:Key="FocusPresetButtonStyle" TargetType="Button" BasedOn="{StaticResource GhostButtonStyle}">
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
         <Style x:Key="ModeRadioStyle" TargetType="RadioButton">
             <Setter Property="Foreground" Value="#BFD3F4" />
             <Setter Property="FontSize" Value="11" />
@@ -361,6 +368,21 @@
                                                  Content="天"
                                                  Style="{StaticResource MiniRadioStyle}" />
                                 </StackPanel>
+                            </Grid>
+                            <Grid Margin="0,10,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="8" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0"
+                                        Click="PomodoroFocusButton_OnClick"
+                                        Content="番茄专注"
+                                        Style="{StaticResource FocusPresetButtonStyle}" />
+                                <Button Grid.Column="2"
+                                        Click="DeepFocusButton_OnClick"
+                                        Content="深度专注"
+                                        Style="{StaticResource FocusPresetButtonStyle}" />
                             </Grid>
                         </StackPanel>
                     </Border>
