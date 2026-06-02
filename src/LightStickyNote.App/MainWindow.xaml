@@ -51,7 +51,7 @@
             <Setter Property="Background" Value="#441D293B" />
             <Setter Property="BorderBrush" Value="#4B4E6791" />
             <Setter Property="Foreground" Value="#BBD0FF" />
-            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Cursor" Value="SizeAll" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -272,6 +272,32 @@
             </Setter>
         </Style>
 
+        <Style x:Key="TaskListBoxStyle" TargetType="ListBox">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+            <Setter Property="ScrollViewer.CanContentScroll" Value="False" />
+        </Style>
+
+        <Style x:Key="TaskListBoxItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <ContentPresenter />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="DialogButtonStyle" TargetType="Button">
             <Setter Property="MinWidth" Value="68" />
             <Setter Property="Height" Value="30" />
@@ -447,7 +473,8 @@
                 </StackPanel>
             </Grid>
 
-            <Grid Grid.Row="1"
+            <Grid x:Name="TaskListHost"
+                  Grid.Row="1"
                   Margin="0,12,0,12">
                 <Border Background="#24192534"
                         BorderBrush="#363B506F"
@@ -477,8 +504,10 @@
                     </StackPanel>
                 </Border>
 
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding Items}">
+                <ScrollViewer x:Name="TaskListScrollViewer"
+                              VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="TaskItemsControl"
+                                  ItemsSource="{Binding Items}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="{x:Type vm:TaskItemViewModel}">
                                 <Border x:Name="TaskCard"
@@ -487,7 +516,15 @@
                                         Background="{StaticResource CardBrush}"
                                         BorderBrush="{StaticResource CardBorderBrush}"
                                         BorderThickness="1"
-                                        CornerRadius="10">
+                                        CornerRadius="10"
+                                        RenderTransformOrigin="0.5,0.5">
+                                    <Border.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform ScaleX="{Binding DragScale}"
+                                                            ScaleY="{Binding DragScale}" />
+                                            <TranslateTransform Y="{Binding DragOffsetY}" />
+                                        </TransformGroup>
+                                    </Border.RenderTransform>
                                     <DockPanel LastChildFill="True">
                                         <Button x:Name="TaskMenuButton"
                                                 DockPanel.Dock="Right"
@@ -553,6 +590,34 @@
                                         <Setter TargetName="ReminderBadge" Property="Background" Value="#4A2732" />
                                         <Setter TargetName="ReminderBadge" Property="BorderBrush" Value="#D07A97" />
                                         <Setter TargetName="ReminderBadgeText" Property="Foreground" Value="#FFD1DE" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsDragActive}" Value="True">
+                                        <Setter TargetName="TaskCard" Property="Panel.ZIndex" Value="100" />
+                                        <Setter TargetName="TaskCard" Property="Opacity" Value="0.99" />
+                                        <Setter TargetName="TaskCard" Property="Background">
+                                            <Setter.Value>
+                                                <LinearGradientBrush StartPoint="0.5,0"
+                                                                     EndPoint="0.5,1">
+                                                    <GradientStop Color="#F03A4F68"
+                                                                  Offset="0" />
+                                                    <GradientStop Color="#DC2D3D54"
+                                                                  Offset="0.16" />
+                                                    <GradientStop Color="#D1263448"
+                                                                  Offset="0.52" />
+                                                    <GradientStop Color="#C61D2A3A"
+                                                                  Offset="1" />
+                                                </LinearGradientBrush>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Setter TargetName="TaskCard" Property="BorderBrush" Value="#B9D4FF" />
+                                        <Setter TargetName="TaskCard" Property="Effect">
+                                            <Setter.Value>
+                                                <DropShadowEffect BlurRadius="36"
+                                                                  Opacity="0.68"
+                                                                  ShadowDepth="18"
+                                                                  Color="#050B14" />
+                                            </Setter.Value>
+                                        </Setter>
                                     </DataTrigger>
                                 </DataTemplate.Triggers>
                             </DataTemplate>

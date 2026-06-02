@@ -11,6 +11,11 @@ public sealed class TaskItemViewModel : ObservableObject
     private bool _isDone;
     private string _reminderDisplayText = string.Empty;
     private bool _isReminderOverdue;
+    private bool _isDragActive;
+    private bool _showDropBefore;
+    private bool _showDropAfter;
+    private double _dragOffsetY;
+    private double _dragScale = 1;
 
     public TaskItemViewModel(NoteItem model)
     {
@@ -86,6 +91,36 @@ public sealed class TaskItemViewModel : ObservableObject
 
     public string ReminderMenuText => HasReminder ? "编辑提醒" : "设置提醒";
 
+    public bool IsDragActive
+    {
+        get => _isDragActive;
+        set => SetProperty(ref _isDragActive, value);
+    }
+
+    public bool ShowDropBefore
+    {
+        get => _showDropBefore;
+        set => SetProperty(ref _showDropBefore, value);
+    }
+
+    public bool ShowDropAfter
+    {
+        get => _showDropAfter;
+        set => SetProperty(ref _showDropAfter, value);
+    }
+
+    public double DragOffsetY
+    {
+        get => _dragOffsetY;
+        set => SetProperty(ref _dragOffsetY, value);
+    }
+
+    public double DragScale
+    {
+        get => _dragScale;
+        set => SetProperty(ref _dragScale, value);
+    }
+
     public NoteItem ToModel(int sortOrder)
     {
         _model.SortOrder = sortOrder;
@@ -132,6 +167,15 @@ public sealed class TaskItemViewModel : ObservableObject
         ReminderDisplayText = _model.ReminderAt is { } reminderAt
             ? ReminderDisplayFormatter.FormatBadge(reminderAt, now)
             : string.Empty;
+    }
+
+    public void ClearDragState()
+    {
+        IsDragActive = false;
+        DragOffsetY = 0;
+        DragScale = 1;
+        ShowDropBefore = false;
+        ShowDropAfter = false;
     }
 
     private void Touch()

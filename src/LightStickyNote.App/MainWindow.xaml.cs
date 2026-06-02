@@ -1,14 +1,18 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using System.Windows.Threading;
 using LightStickyNote.App.Services;
 using LightStickyNote.App.ViewModels;
+using Button = System.Windows.Controls.Button;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 
 namespace LightStickyNote.App;
 
@@ -16,6 +20,8 @@ public partial class MainWindow : Window
 {
     private static readonly TimeSpan PreviewAutoHideProtection = TimeSpan.FromMilliseconds(320);
     private static readonly TimeSpan DragAutoHideProtection = TimeSpan.FromMilliseconds(240);
+    private static readonly TimeSpan TaskDragHoldDelay = TimeSpan.FromMilliseconds(300);
+    private const double TaskDragActivationTolerance = 10;
 
     private double _displayedCompletionPercentage;
     private TaskItemViewModel? _pendingDeleteItem;
@@ -30,6 +36,17 @@ public partial class MainWindow : Window
     private double _snappedRevealTop;
     private double _snappedRevealHeight;
     private DateTime _suppressAutoHideUntil = DateTime.MinValue;
+    private readonly DispatcherTimer _taskDragHoldTimer;
+    private readonly Border _taskDropIndicator;
+    private TaskItemViewModel? _pendingDragItem;
+    private Button? _pendingDragButton;
+    private TaskItemViewModel? _activeDragItem;
+    private FrameworkElement? _activeDragContainer;
+    private Border? _activeDragCard;
+    private System.Windows.Point _pendingDragStartPoint;
+    private double _activeDragPointerOffsetY;
+    private int _currentInsertionIndex = -1;
+    private bool _suppressTaskMenuClick;
 
     public bool AllowClose { get; set; }
 
@@ -47,11 +64,37 @@ public partial class MainWindow : Window
         MouseLeave += MainWindow_OnMouseLeave;
         SettingsPopup.Closed += SettingsPopup_OnClosed;
         ViewModel.Settings.PropertyChanged += Settings_OnPropertyChanged;
+        PreviewMouseLeftButtonDown += MainWindow_OnPreviewMouseLeftButtonDown;
+        PreviewMouseLeftButtonUp += MainWindow_OnPreviewMouseLeftButtonUp;
+        PreviewMouseMove += MainWindow_OnPreviewMouseMove;
 
         _edgeHideTimer = new DispatcherTimer();
         _edgeHideTimer.Tick += EdgeHideTimer_OnTick;
         _edgeRevealWindow = new EdgeRevealWindow();
         _edgeRevealWindow.RevealRequested += EdgeRevealWindow_OnRevealRequested;
+        _taskDragHoldTimer = new DispatcherTimer
+        {
+            Interval = TaskDragHoldDelay
+        };
+        _taskDragHoldTimer.Tick += TaskDragHoldTimer_OnTick;
+        _taskDropIndicator = new Border
+        {
+            Height = 5,
+            Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xF0, 0xB8, 0xD4, 0xFF)),
+            CornerRadius = new CornerRadius(3),
+            Visibility = Visibility.Collapsed,
+            IsHitTestVisible = false,
+            HorizontalAlignment = System.Windows.HorizontalAlignment.Left,
+            VerticalAlignment = System.Windows.VerticalAlignment.Top,
+            Effect = new DropShadowEffect
+            {
+                BlurRadius = 14,
+                ShadowDepth = 0,
+                Opacity = 0.6,
+                Color = System.Windows.Media.Color.FromArgb(0xFF, 0x8F, 0xBE, 0xFF)
+            }
+        };
+        System.Windows.Controls.Panel.SetZIndex(_taskDropIndicator, 200);
     }
 
     private MainViewModel ViewModel => (MainViewModel)DataContext;
@@ -61,6 +104,11 @@ public partial class MainWindow : Window
         ViewModel.ApplyWindowToView(this);
         CacheRevealBoundsFromCurrentWindow();
         _displayedCompletionPercentage = ViewModel.CompletionPercentage;
+        if (!TaskListHost.Children.Contains(_taskDropIndicator))
+        {
+            TaskListHost.Children.Add(_taskDropIndicator);
+        }
+
         NewTaskTextBox.Focus();
     }
 
@@ -207,6 +255,11 @@ public partial class MainWindow : Window
 
     private void OnDeactivated(object? sender, EventArgs e)
     {
+        if (_activeDragItem is not null)
+        {
+            CompleteTaskDrag(commit: false);
+        }
+
         ScheduleEdgeHide();
     }
 
@@ -474,6 +527,298 @@ public partial class MainWindow : Window
         return target.TransformFromDevice.Transform(new System.Windows.Point(nativePoint.X, nativePoint.Y));
     }
 
+    private void MainWindow_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (!TryGetTaskMenuButton(e.OriginalSource, out var button, out var item) ||
+            ViewModel.Items.Count <= 1)
+        {
+            return;
+        }
+
+        _suppressTaskMenuClick = false;
+        _pendingDragItem = item;
+        _pendingDragButton = button;
+        _pendingDragStartPoint = e.GetPosition(TaskListHost);
+        _taskDragHoldTimer.Stop();
+        _taskDragHoldTimer.Start();
+    }
+
+    private void MainWindow_OnPreviewMouseMove(object sender, MouseEventArgs e)
+    {
+        if (_activeDragItem is not null)
+        {
+            UpdateTaskDrag(e.GetPosition(TaskListHost));
+            e.Handled = true;
+            return;
+        }
+
+        if (_pendingDragItem is null || _pendingDragButton is null)
+        {
+            return;
+        }
+
+        if (e.LeftButton != MouseButtonState.Pressed)
+        {
+            CancelPendingTaskDrag();
+            return;
+        }
+
+        var currentPoint = e.GetPosition(TaskListHost);
+        if (Math.Abs(currentPoint.X - _pendingDragStartPoint.X) > TaskDragActivationTolerance ||
+            Math.Abs(currentPoint.Y - _pendingDragStartPoint.Y) > TaskDragActivationTolerance)
+        {
+            CancelPendingTaskDrag();
+        }
+    }
+
+    private void MainWindow_OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        if (_activeDragItem is not null)
+        {
+            CompleteTaskDrag(commit: true);
+            e.Handled = true;
+            return;
+        }
+
+        CancelPendingTaskDrag();
+    }
+
+    private void TaskDragHoldTimer_OnTick(object? sender, EventArgs e)
+    {
+        _taskDragHoldTimer.Stop();
+
+        if (_pendingDragItem is null || _pendingDragButton is null || Mouse.LeftButton != MouseButtonState.Pressed)
+        {
+            CancelPendingTaskDrag();
+            return;
+        }
+
+        StartTaskDrag(_pendingDragItem);
+    }
+
+    private void StartTaskDrag(TaskItemViewModel item)
+    {
+        if (GetItemContainer(item) is not FrameworkElement container ||
+            FindNamedDescendant<Border>(container, "TaskCard") is not Border taskCard)
+        {
+            CancelPendingTaskDrag();
+            return;
+        }
+
+        var pointer = Mouse.GetPosition(TaskListHost);
+        var cardTop = taskCard.TranslatePoint(new System.Windows.Point(0, 0), TaskListHost).Y;
+
+        _activeDragItem = item;
+        _activeDragContainer = container;
+        _activeDragCard = taskCard;
+        _activeDragPointerOffsetY = pointer.Y - cardTop;
+        _currentInsertionIndex = ViewModel.Items.IndexOf(item);
+        _suppressTaskMenuClick = true;
+        item.IsDragActive = true;
+        item.DragScale = 1.035;
+        UpdateTaskDrag(pointer);
+        Mouse.Capture(this, CaptureMode.SubTree);
+    }
+
+    private void UpdateTaskDrag(System.Windows.Point pointer)
+    {
+        if (_activeDragItem is null || _activeDragContainer is null)
+        {
+            return;
+        }
+
+        var containerTop = _activeDragContainer.TranslatePoint(new System.Windows.Point(0, 0), TaskListHost).Y;
+        _activeDragItem.DragOffsetY = pointer.Y - containerTop - _activeDragPointerOffsetY;
+
+        _currentInsertionIndex = GetInsertionIndexForPoint(pointer.Y);
+        UpdateTaskDropIndicator(_currentInsertionIndex);
+    }
+
+    private void CompleteTaskDrag(bool commit)
+    {
+        _taskDragHoldTimer.Stop();
+
+        if (_activeDragItem is not null && commit && _currentInsertionIndex >= 0)
+        {
+            ViewModel.MoveItemToInsertionIndex(_activeDragItem, _currentInsertionIndex);
+        }
+
+        ResetTaskDragVisualState();
+        CancelPendingTaskDrag();
+        if (Mouse.Captured == this)
+        {
+            ReleaseMouseCapture();
+        }
+    }
+
+    private void CancelPendingTaskDrag()
+    {
+        _taskDragHoldTimer.Stop();
+        _pendingDragItem = null;
+        _pendingDragButton = null;
+    }
+
+    private void ResetTaskDragVisualState()
+    {
+        HideTaskDropIndicator();
+        _currentInsertionIndex = -1;
+
+        if (_activeDragItem is not null)
+        {
+            _activeDragItem.ClearDragState();
+        }
+
+        _activeDragItem = null;
+        _activeDragContainer = null;
+        _activeDragCard = null;
+    }
+
+    private int GetInsertionIndexForPoint(double y)
+    {
+        for (var index = 0; index < ViewModel.Items.Count; index++)
+        {
+            var item = ViewModel.Items[index];
+            if (ReferenceEquals(item, _activeDragItem))
+            {
+                continue;
+            }
+
+            if (GetItemContainer(item) is not FrameworkElement container)
+            {
+                continue;
+            }
+
+            var top = container.TranslatePoint(new System.Windows.Point(0, 0), TaskListHost).Y;
+            var mid = top + (container.ActualHeight / 2);
+            if (y < mid)
+            {
+                return index;
+            }
+        }
+
+        return ViewModel.Items.Count;
+    }
+
+    private void UpdateTaskDropIndicator(int insertionIndex)
+    {
+        if (_activeDragItem is null)
+        {
+            HideTaskDropIndicator();
+            return;
+        }
+
+        var currentIndex = ViewModel.Items.IndexOf(_activeDragItem);
+        var targetIndex = TaskReorderService.ToTargetIndexFromInsertionIndex(
+            currentIndex,
+            insertionIndex,
+            ViewModel.Items.Count);
+
+        if (targetIndex == currentIndex)
+        {
+            HideTaskDropIndicator();
+            return;
+        }
+
+        FrameworkElement? anchorContainer;
+        Border? anchorCard;
+        double indicatorTop;
+
+        if (insertionIndex >= ViewModel.Items.Count)
+        {
+            var anchorItem = ViewModel.Items.LastOrDefault(item => !ReferenceEquals(item, _activeDragItem));
+            anchorContainer = anchorItem is null ? null : GetItemContainer(anchorItem);
+            anchorCard = anchorContainer is null ? null : FindNamedDescendant<Border>(anchorContainer, "TaskCard");
+            if (anchorCard is null)
+            {
+                HideTaskDropIndicator();
+                return;
+            }
+
+            var cardOrigin = anchorCard.TranslatePoint(new System.Windows.Point(0, 0), TaskListHost);
+            indicatorTop = cardOrigin.Y + anchorCard.ActualHeight + 4;
+        }
+        else
+        {
+            anchorContainer = GetItemContainer(ViewModel.Items[insertionIndex]);
+            anchorCard = anchorContainer is null ? null : FindNamedDescendant<Border>(anchorContainer, "TaskCard");
+            if (anchorCard is null)
+            {
+                HideTaskDropIndicator();
+                return;
+            }
+
+            var cardOrigin = anchorCard.TranslatePoint(new System.Windows.Point(0, 0), TaskListHost);
+            indicatorTop = cardOrigin.Y - 7;
+        }
+
+        var indicatorOrigin = anchorCard.TranslatePoint(new System.Windows.Point(0, 0), TaskListHost);
+        _taskDropIndicator.Width = Math.Max(96, anchorCard.ActualWidth - 12);
+        _taskDropIndicator.Margin = new Thickness(indicatorOrigin.X + 6, indicatorTop, 0, 0);
+        _taskDropIndicator.Visibility = Visibility.Visible;
+    }
+
+    private void HideTaskDropIndicator()
+    {
+        _taskDropIndicator.Visibility = Visibility.Collapsed;
+    }
+
+    private FrameworkElement? GetItemContainer(TaskItemViewModel item)
+    {
+        return TaskItemsControl.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
+    }
+
+    private static bool TryGetTaskMenuButton(object? originalSource, out Button? button, out TaskItemViewModel? item)
+    {
+        button = FindAncestor<Button>(originalSource as DependencyObject);
+        if (button is null || button.Name != "TaskMenuButton" || button.DataContext is not TaskItemViewModel taskItem)
+        {
+            button = null;
+            item = null;
+            return false;
+        }
+
+        item = taskItem;
+        return true;
+    }
+
+    private static T? FindAncestor<T>(DependencyObject? dependencyObject)
+        where T : DependencyObject
+    {
+        var current = dependencyObject;
+        while (current is not null)
+        {
+            if (current is T match)
+            {
+                return match;
+            }
+
+            current = VisualTreeHelper.GetParent(current);
+        }
+
+        return null;
+    }
+
+    private static T? FindNamedDescendant<T>(DependencyObject root, string name)
+        where T : FrameworkElement
+    {
+        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
+        {
+            var child = VisualTreeHelper.GetChild(root, index);
+            if (child is T candidate && candidate.Name == name)
+            {
+                return candidate;
+            }
+
+            var nested = FindNamedDescendant<T>(child, name);
+            if (nested is not null)
+            {
+                return nested;
+            }
+        }
+
+        return null;
+    }
+
     [DllImport("user32.dll")]
     private static extern bool GetWindowRect(IntPtr windowHandle, out NativeWindowBounds bounds);
 
@@ -510,6 +855,13 @@ public partial class MainWindow : Window
 
     private void TaskMenuButton_OnClick(object sender, RoutedEventArgs e)
     {
+        if (_suppressTaskMenuClick)
+        {
+            _suppressTaskMenuClick = false;
+            e.Handled = true;
+            return;
+        }
+
         if (sender is not FrameworkElement { ContextMenu: { } contextMenu })
         {
             return;
