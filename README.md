@@ -1,6 +1,6 @@
 # LightStickyNote
 
-![LightStickyNote 透明图标](assets/branding/app-icon-transparent.png)
+<img src="assets/branding/app-icon-transparent.png" alt="LightStickyNote 透明图标" width="120" />
 
 LightStickyNote 是一个面向 Windows 桌面的轻量便签工具。
 
@@ -15,6 +15,7 @@ LightStickyNote 是一个面向 Windows 桌面的轻量便签工具。
 - **安全删除**：删除任务前会在便签内部弹出确认卡片，减少误触。
 - **提醒功能**：每条任务都可以通过右侧三点菜单设置提醒。
 - **提醒编辑面板**：支持 `指定时间` 和 `倒计时` 两种方式，任务可直接手输日期、小时、分钟，并支持 1 分钟粒度。
+- **专注快捷入口**：在倒计时提醒里内置 `番茄专注` 和 `深度专注` 按钮，可一键切换为 25 分钟或 50 分钟倒计时。
 - **提醒状态展示**：设置提醒后，任务右侧会显示克制的时间标记；逾期任务会切换为单独的提醒色。
 - **到点通知**：到达提醒时间后，会通过托盘通知提醒当前任务。
 - **自动取消提醒**：任务完成后会自动清除提醒，避免完成项继续触发通知。
@@ -37,7 +38,7 @@ LightStickyNote 是一个面向 Windows 桌面的轻量便签工具。
 2. 直接点击任务文字进行编辑。
 3. 勾选任务左侧复选框，将任务标记为已完成。
 4. 点击任务右侧三点菜单，可选择 `设置提醒 / 编辑提醒` 或 `删除任务`。
-5. 在提醒面板中选择 `指定时间` 或 `倒计时`，保存后任务右侧会显示提醒时间。
+5. 在提醒面板中选择 `指定时间` 或 `倒计时`；如果想快速进入专注节奏，也可以直接点击 `番茄专注`（25 分钟）或 `深度专注`（50 分钟），保存后任务右侧会显示提醒时间。
 6. 点击右上角齿轮，打开悬浮设置卡片。
 7. 在设置卡片中控制始终置顶、开机自启动、边缘吸附隐藏和透明度。
 
@@ -138,5 +139,6 @@ dotnet test .\tests\LightStickyNote.App.Tests\LightStickyNote.App.Tests.csproj -
 
 ![界面示例 1](https://raw.gitcode.com/user-images/assets/9992847/43c9e04d-c347-409a-827f-97388c0f97ba/3c6d6a8713c42110540a7cbeb1906c60.png)
 ![界面示例 2](https://raw.gitcode.com/user-images/assets/9992847/cde3c95d-5a1f-47cd-b274-f0525fe3c418/4dbdbf3a1dc6c85d0f17058ba2311837.png)
+![image.png](https://raw.gitcode.com/user-images/assets/9992847/aa1f5fca-14d0-4314-8332-0c7b4536aa4e/image.png 'image.png')
 ![界面示例 3](https://raw.gitcode.com/user-images/assets/9992847/904b745b-9127-440f-8594-4d2526721e11/image.png)
 ![界面示例 4](https://raw.gitcode.com/user-images/assets/9992847/757b5cc1-d9a7-470e-b8ef-4c37973e8028/d234166391193ddfd73f634468b8909d.png)
