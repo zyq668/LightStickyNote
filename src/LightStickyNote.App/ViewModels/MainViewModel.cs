@@ -137,6 +137,25 @@ public sealed class MainViewModel : ObservableObject
         await _settingsService.SaveAsync(Settings);
     }
 
+    public IEnumerable<TaskItemViewModel> GetDueReminderItems(DateTimeOffset now)
+    {
+        return Items
+            .Where(item =>
+                item.ReminderAt is { } reminderAt &&
+                reminderAt <= now &&
+                item.ReminderNotifiedAt is null &&
+                !item.IsDone)
+            .ToList();
+    }
+
+    public void RefreshReminderBadges(DateTimeOffset now)
+    {
+        foreach (var item in Items)
+        {
+            item.RefreshReminderDisplay(now);
+        }
+    }
+
     private async Task DeleteItemAsync(TaskItemViewModel item)
     {
         item.Changed -= OnTaskItemChanged;

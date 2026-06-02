@@ -17,4 +17,8 @@ public sealed class NoteItem
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
 
     public DateTimeOffset? CompletedAt { get; set; }
+
+    public DateTimeOffset? ReminderAt { get; set; }
+
+    public DateTimeOffset? ReminderNotifiedAt { get; set; }
 }

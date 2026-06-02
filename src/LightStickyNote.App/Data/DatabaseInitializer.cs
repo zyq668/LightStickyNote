@@ -47,6 +47,8 @@ public sealed class DatabaseInitializer
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL,
                 completed_at TEXT NULL,
+                reminder_at TEXT NULL,
+                reminder_notified_at TEXT NULL,
                 FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE
             );
 
@@ -79,5 +81,35 @@ public sealed class DatabaseInitializer
             """;
 
         await command.ExecuteNonQueryAsync();
+        await EnsureNoteItemsColumnsAsync(connection);
+    }
+
+    private static async Task EnsureNoteItemsColumnsAsync(SqliteConnection connection)
+    {
+        var columns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var command = connection.CreateCommand();
+        command.CommandText = "PRAGMA table_info(note_items);";
+
+        await using (var reader = await command.ExecuteReaderAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                columns.Add(reader.GetString(1));
+            }
+        }
+
+        if (!columns.Contains("reminder_at"))
+        {
+            var addReminderAt = connection.CreateCommand();
+            addReminderAt.CommandText = "ALTER TABLE note_items ADD COLUMN reminder_at TEXT NULL;";
+            await addReminderAt.ExecuteNonQueryAsync();
+        }
+
+        if (!columns.Contains("reminder_notified_at"))
+        {
+            var addReminderNotifiedAt = connection.CreateCommand();
+            addReminderNotifiedAt.CommandText = "ALTER TABLE note_items ADD COLUMN reminder_notified_at TEXT NULL;";
+            await addReminderNotifiedAt.ExecuteNonQueryAsync();
+        }
     }
 }

@@ -46,6 +46,31 @@ public sealed class DatabaseInitializerTests : IDisposable
         Assert.Contains("note_tags", tables);
     }
 
+    [Fact]
+    public async Task InitializeAsync_CreatesReminderColumnsOnNoteItems()
+    {
+        var databasePath = Path.Combine(_rootDirectory, "init-columns.db");
+        var initializer = new DatabaseInitializer(databasePath);
+
+        await initializer.InitializeAsync();
+
+        await using var connection = new SqliteConnection($"Data Source={databasePath}");
+        await connection.OpenAsync();
+
+        var command = connection.CreateCommand();
+        command.CommandText = "PRAGMA table_info(note_items);";
+
+        var columns = new List<string>();
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            columns.Add(reader.GetString(1));
+        }
+
+        Assert.Contains("reminder_at", columns);
+        Assert.Contains("reminder_notified_at", columns);
+    }
+
     public void Dispose()
     {
         try

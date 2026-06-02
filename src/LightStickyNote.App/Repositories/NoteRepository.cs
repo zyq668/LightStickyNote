@@ -68,8 +68,8 @@ public sealed class NoteRepository
             insertItem.Transaction = transaction;
             insertItem.CommandText =
                 """
-                INSERT INTO note_items (id, note_id, text, is_done, sort_order, created_at, updated_at, completed_at)
-                VALUES (@id, @note_id, @text, @is_done, @sort_order, @created_at, @updated_at, @completed_at);
+                INSERT INTO note_items (id, note_id, text, is_done, sort_order, created_at, updated_at, completed_at, reminder_at, reminder_notified_at)
+                VALUES (@id, @note_id, @text, @is_done, @sort_order, @created_at, @updated_at, @completed_at, @reminder_at, @reminder_notified_at);
                 """;
             BindItem(insertItem, item);
             await insertItem.ExecuteNonQueryAsync();
@@ -123,7 +123,7 @@ public sealed class NoteRepository
         var command = connection.CreateCommand();
         command.CommandText =
             """
-            SELECT id, note_id, text, is_done, sort_order, created_at, updated_at, completed_at
+            SELECT id, note_id, text, is_done, sort_order, created_at, updated_at, completed_at, reminder_at, reminder_notified_at
             FROM note_items
             WHERE note_id = @note_id
             ORDER BY sort_order, created_at;
@@ -143,7 +143,9 @@ public sealed class NoteRepository
                 SortOrder = reader.GetInt32(4),
                 CreatedAt = DateTimeOffset.Parse(reader.GetString(5)),
                 UpdatedAt = DateTimeOffset.Parse(reader.GetString(6)),
-                CompletedAt = reader.IsDBNull(7) ? null : DateTimeOffset.Parse(reader.GetString(7))
+                CompletedAt = reader.IsDBNull(7) ? null : DateTimeOffset.Parse(reader.GetString(7)),
+                ReminderAt = reader.IsDBNull(8) ? null : DateTimeOffset.Parse(reader.GetString(8)),
+                ReminderNotifiedAt = reader.IsDBNull(9) ? null : DateTimeOffset.Parse(reader.GetString(9))
             });
         }
 
@@ -174,5 +176,7 @@ public sealed class NoteRepository
         command.Parameters.AddWithValue("@created_at", item.CreatedAt.ToString("O"));
         command.Parameters.AddWithValue("@updated_at", item.UpdatedAt.ToString("O"));
         command.Parameters.AddWithValue("@completed_at", (object?)item.CompletedAt?.ToString("O") ?? DBNull.Value);
+        command.Parameters.AddWithValue("@reminder_at", (object?)item.ReminderAt?.ToString("O") ?? DBNull.Value);
+        command.Parameters.AddWithValue("@reminder_notified_at", (object?)item.ReminderNotifiedAt?.ToString("O") ?? DBNull.Value);
     }
 }

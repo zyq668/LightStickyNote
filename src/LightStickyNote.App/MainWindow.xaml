@@ -142,6 +142,7 @@
             <Setter Property="Foreground" Value="#8494B4" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Opacity" Value="0" />
+            <Setter Property="Visibility" Value="Collapsed" />
             <Setter Property="ToolTip" Value="删除任务" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -156,9 +157,114 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="DeleteBorder" Property="Background" Value="#663C2635" />
-                                <Setter TargetName="DeleteBorder" Property="BorderBrush" Value="#886D3C52" />
-                                <Setter Property="Foreground" Value="#FF9CB1" />
+                                <Setter TargetName="DeleteBorder" Property="Background" Value="#66324A70" />
+                                <Setter TargetName="DeleteBorder" Property="BorderBrush" Value="#997FA6EA" />
+                                <Setter Property="Foreground" Value="#D7E5FF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ReminderBadgeStyle" TargetType="Border">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Setter Property="Padding" Value="8,3" />
+            <Setter Property="Background" Value="#24324A" />
+            <Setter Property="BorderBrush" Value="#4E6893" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+        </Style>
+
+        <Style x:Key="TaskMenuButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="27" />
+            <Setter Property="Height" Value="27" />
+            <Setter Property="Background" Value="#1622333D" />
+            <Setter Property="BorderBrush" Value="#00000000" />
+            <Setter Property="Foreground" Value="#A9BEE4" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Setter Property="ToolTip" Value="更多操作" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="TaskMenuButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="9">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="TaskMenuButtonBorder" Property="Background" Value="#2F31465B" />
+                                <Setter TargetName="TaskMenuButtonBorder" Property="BorderBrush" Value="#668DB4F2" />
+                                <Setter Property="Foreground" Value="#E4EEFF" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="TaskMenuButtonBorder" Property="Background" Value="#48395773" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PolishedReminderBadgeStyle" TargetType="Border">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Setter Property="Padding" Value="9,3" />
+            <Setter Property="Background" Value="#1D2C42" />
+            <Setter Property="BorderBrush" Value="#4D6F9D" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="11" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+        </Style>
+
+        <Style x:Key="TaskMenuContextMenuStyle" TargetType="ContextMenu">
+            <Setter Property="Background" Value="#F716202F" />
+            <Setter Property="BorderBrush" Value="#6E88B5F0" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="6" />
+            <Setter Property="HasDropShadow" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ContextMenu">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="12"
+                                Padding="{TemplateBinding Padding}">
+                            <StackPanel IsItemsHost="True"
+                                        KeyboardNavigation.DirectionalNavigation="Cycle" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TaskMenuItemStyle" TargetType="MenuItem">
+            <Setter Property="Foreground" Value="#E7F0FF" />
+            <Setter Property="Padding" Value="12,7" />
+            <Setter Property="Margin" Value="0,2,0,2" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Border x:Name="MenuItemBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8">
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              ContentSource="Header" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="MenuItemBorder" Property="Background" Value="#2D3850" />
+                                <Setter TargetName="MenuItemBorder" Property="BorderBrush" Value="#5E82C0" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -383,16 +489,45 @@
                                         BorderThickness="1"
                                         CornerRadius="10">
                                     <DockPanel LastChildFill="True">
-                                        <Button x:Name="DeleteButton"
+                                        <Button x:Name="TaskMenuButton"
                                                 DockPanel.Dock="Right"
-                                                Margin="7,0,0,0"
+                                                Width="27"
+                                                Height="27"
+                                                Margin="8,0,0,0"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Top"
                                                 AutomationProperties.Name="删除任务"
-                                                Click="DeleteButton_OnClick"
-                                                Style="{StaticResource DeleteButtonStyle}">
-                                            <TextBlock Text="×"
+                                                Click="TaskMenuButton_OnClick"
+                                                Style="{StaticResource TaskMenuButtonStyle}"
+                                                ToolTip="更多操作">
+                                            <Button.ContextMenu>
+                                                <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}"
+                                                             Style="{StaticResource TaskMenuContextMenuStyle}">
+                                                    <MenuItem Header="{Binding ReminderMenuText}"
+                                                              Style="{StaticResource TaskMenuItemStyle}"
+                                                              Click="ReminderMenuItem_OnClick" />
+                                                    <MenuItem Header="删除任务"
+                                                              Style="{StaticResource TaskMenuItemStyle}"
+                                                              Click="DeleteMenuItem_OnClick" />
+                                                </ContextMenu>
+                                            </Button.ContextMenu>
+                                            <TextBlock Text="⋮"
                                                        FontFamily="Segoe UI"
-                                                       FontSize="16" />
+                                                       FontSize="16"
+                                                       FontWeight="Bold" />
                                         </Button>
+                                        <Border x:Name="ReminderBadge"
+                                                DockPanel.Dock="Right"
+                                                Margin="8,1,0,0"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Top"
+                                                Style="{StaticResource PolishedReminderBadgeStyle}">
+                                            <TextBlock x:Name="ReminderBadgeText"
+                                                       Text="{Binding ReminderDisplayText}"
+                                                       Foreground="#D8E7FF"
+                                                       FontSize="11"
+                                                       FontWeight="SemiBold" />
+                                        </Border>
                                         <CheckBox DockPanel.Dock="Left"
                                                   Margin="0,3,9,0"
                                                   VerticalAlignment="Top"
@@ -406,9 +541,19 @@
                                 </Border>
                                 <DataTemplate.Triggers>
                                     <Trigger SourceName="TaskCard" Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="DeleteButton" Property="Opacity" Value="1" />
+                                        <Setter TargetName="TaskMenuButton" Property="Visibility" Value="Visible" />
+                                        <Setter TargetName="TaskMenuButton" Property="Opacity" Value="1" />
+                                        <Setter TargetName="ReminderBadge" Property="Visibility" Value="Collapsed" />
                                         <Setter TargetName="TaskCard" Property="BorderBrush" Value="#725A78A8" />
                                     </Trigger>
+                                    <DataTrigger Binding="{Binding HasReminder}" Value="True">
+                                        <Setter TargetName="ReminderBadge" Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsReminderOverdue}" Value="True">
+                                        <Setter TargetName="ReminderBadge" Property="Background" Value="#4A2732" />
+                                        <Setter TargetName="ReminderBadge" Property="BorderBrush" Value="#D07A97" />
+                                        <Setter TargetName="ReminderBadgeText" Property="Foreground" Value="#FFD1DE" />
+                                    </DataTrigger>
                                 </DataTemplate.Triggers>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -687,3 +832,4 @@
         </Grid>
     </Border>
 </Window>
+

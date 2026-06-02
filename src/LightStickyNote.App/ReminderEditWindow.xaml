@@ -1,0 +1,396 @@
+<Window x:Class="LightStickyNote.App.ReminderEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="提醒"
+        Width="356"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="False"
+        FontFamily="Microsoft YaHei UI"
+        UseLayoutRounding="True">
+    <Window.Resources>
+        <Style x:Key="HeaderIconButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Background" Value="#1A2936" />
+            <Setter Property="BorderBrush" Value="#3C556F" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="#FFBFD0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="HeaderIconBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="9">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="HeaderIconBorder" Property="Background" Value="#273547" />
+                                <Setter TargetName="HeaderIconBorder" Property="BorderBrush" Value="#D78AA3" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="HeaderIconBorder" Property="Background" Value="#334154" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="GhostButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Padding" Value="14,0" />
+            <Setter Property="Background" Value="#152231" />
+            <Setter Property="BorderBrush" Value="#334D6D" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="#D7E6FF" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="GhostBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="GhostBorder" Property="Background" Value="#1D2F44" />
+                                <Setter TargetName="GhostBorder" Property="BorderBrush" Value="#638DC5" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="GhostBorder" Property="Background" Value="#27405A" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button" BasedOn="{StaticResource GhostButtonStyle}">
+            <Setter Property="Background" Value="#35527B" />
+            <Setter Property="BorderBrush" Value="#8EB2F2" />
+            <Setter Property="Foreground" Value="#F3F8FF" />
+        </Style>
+
+        <Style x:Key="ModeRadioStyle" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="#BFD3F4" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="ModeBorder"
+                                Padding="9,5"
+                                Margin="0,0,8,0"
+                                Background="#111A26"
+                                BorderBrush="#2D425C"
+                                BorderThickness="1"
+                                CornerRadius="9">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="ModeBorder" Property="Background" Value="#25384C" />
+                                <Setter TargetName="ModeBorder" Property="BorderBrush" Value="#7EA9E9" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ModeBorder" Property="BorderBrush" Value="#587EB7" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="MiniRadioStyle" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="#DCE8FF" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="MiniBorder"
+                                MinWidth="38"
+                                Padding="8,4"
+                                Margin="0,0,6,0"
+                                Background="#111A26"
+                                BorderBrush="#2E4057"
+                                BorderThickness="1"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="MiniBorder" Property="Background" Value="#2A3950" />
+                                <Setter TargetName="MiniBorder" Property="BorderBrush" Value="#6E99DC" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="MiniBorder" Property="BorderBrush" Value="#567DB5" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#8EA3C6" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+        </Style>
+
+        <Style x:Key="FieldTextBoxStyle" TargetType="TextBox">
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="8,5" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Background" Value="#111A26" />
+            <Setter Property="BorderBrush" Value="#314560" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="#EEF4FF" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="CaretBrush" Value="#B8D0FF" />
+            <Setter Property="Tag" Value="" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="InputBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="9">
+                            <Grid>
+                                <ScrollViewer x:Name="PART_ContentHost"
+                                              Margin="{TemplateBinding Padding}" />
+                                <TextBlock x:Name="PlaceholderText"
+                                           Margin="{TemplateBinding Padding}"
+                                           VerticalAlignment="Center"
+                                           Foreground="#607796"
+                                           FontSize="{TemplateBinding FontSize}"
+                                           IsHitTestVisible="False"
+                                           Text="{TemplateBinding Tag}"
+                                           Visibility="Collapsed" />
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="InputBorder" Property="BorderBrush" Value="#82ACEA" />
+                                <Setter TargetName="InputBorder" Property="Background" Value="#15263A" />
+                                <Setter TargetName="PlaceholderText" Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="InputBorder" Property="Opacity" Value="0.55" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SectionCardStyle" TargetType="Border">
+            <Setter Property="Padding" Value="11" />
+            <Setter Property="Margin" Value="0,12,0,0" />
+            <Setter Property="Background" Value="#101927" />
+            <Setter Property="BorderBrush" Value="#223349" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Opacity" Value="0.58" />
+        </Style>
+    </Window.Resources>
+
+    <Border Margin="12"
+            Padding="18"
+            Background="#F2141D2B"
+            BorderBrush="#6B86AFEA"
+            BorderThickness="1"
+            CornerRadius="18">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="24"
+                              Opacity="0.38"
+                              ShadowDepth="5"
+                              Color="#000000" />
+        </Border.Effect>
+
+        <StackPanel>
+            <Grid Margin="0,0,0,14"
+                  MouseLeftButtonDown="Header_OnMouseLeftButtonDown">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="TaskTextBlock"
+                           Margin="0,2,0,0"
+                           Foreground="#D5E4FF"
+                           FontSize="13"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap" />
+                <Button x:Name="ClearReminderButton"
+                        Grid.Column="1"
+                        Margin="12,0,0,0"
+                        Click="ClearReminderButton_OnClick"
+                        Style="{StaticResource HeaderIconButtonStyle}"
+                        ToolTip="删除提醒"
+                        Visibility="Collapsed">
+                    <TextBlock Text="🗑"
+                               FontFamily="Segoe UI Emoji"
+                               FontSize="12" />
+                </Button>
+            </Grid>
+
+            <Border Padding="14"
+                    Background="#0E1622"
+                    BorderBrush="#2B3D59"
+                    BorderThickness="1"
+                    CornerRadius="14">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton x:Name="CustomDateTimeRadio"
+                                     IsChecked="True"
+                                     Content="指定时间"
+                                     Style="{StaticResource ModeRadioStyle}" />
+                        <RadioButton x:Name="CountdownRadio"
+                                     Content="倒计时"
+                                     Style="{StaticResource ModeRadioStyle}"
+                                     Checked="CountdownRadio_OnChecked" />
+                    </StackPanel>
+
+                    <Border x:Name="CustomDateTimeSection">
+                        <Border.Style>
+                            <Style TargetType="Border" BasedOn="{StaticResource SectionCardStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsChecked, ElementName=CustomDateTimeRadio}" Value="True">
+                                        <Setter Property="BorderBrush" Value="#7EA9E9" />
+                                        <Setter Property="Background" Value="#142338" />
+                                        <Setter Property="Opacity" Value="1" />
+                                    </DataTrigger>
+                                    <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                        <Setter Property="BorderBrush" Value="#9BC0FF" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <Grid IsEnabled="{Binding IsChecked, ElementName=CustomDateTimeRadio}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="58" />
+                                <ColumnDefinition Width="58" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="日期"
+                                           Style="{StaticResource FieldLabelStyle}" />
+                                <TextBox x:Name="ReminderDateTextBox"
+                                         Style="{StaticResource FieldTextBoxStyle}"
+                                         Tag="2026-06-02" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1"
+                                        Margin="8,0,0,0">
+                                <TextBlock Text="小时"
+                                           Style="{StaticResource FieldLabelStyle}" />
+                                <TextBox x:Name="HourTextBox"
+                                         Style="{StaticResource FieldTextBoxStyle}"
+                                         HorizontalContentAlignment="Center"
+                                         Tag="00" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2"
+                                        Margin="8,0,0,0">
+                                <TextBlock Text="分钟"
+                                           Style="{StaticResource FieldLabelStyle}" />
+                                <TextBox x:Name="MinuteTextBox"
+                                         Style="{StaticResource FieldTextBoxStyle}"
+                                         HorizontalContentAlignment="Center"
+                                         Tag="00" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Border x:Name="CountdownSection">
+                        <Border.Style>
+                            <Style TargetType="Border" BasedOn="{StaticResource SectionCardStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsChecked, ElementName=CountdownRadio}" Value="True">
+                                        <Setter Property="BorderBrush" Value="#7EA9E9" />
+                                        <Setter Property="Background" Value="#142338" />
+                                        <Setter Property="Opacity" Value="1" />
+                                    </DataTrigger>
+                                    <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                        <Setter Property="BorderBrush" Value="#9BC0FF" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <StackPanel IsEnabled="{Binding IsChecked, ElementName=CountdownRadio}">
+                            <TextBlock Text="倒计时"
+                                       Style="{StaticResource FieldLabelStyle}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="68" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="CountdownValueTextBox"
+                                         Style="{StaticResource FieldTextBoxStyle}"
+                                         HorizontalContentAlignment="Center"
+                                         Tag="1" />
+                                <StackPanel Grid.Column="1"
+                                            Margin="10,0,0,0"
+                                            Orientation="Horizontal">
+                                    <RadioButton x:Name="CountdownMinutesRadio"
+                                                 IsChecked="True"
+                                                 Content="分钟"
+                                                 Style="{StaticResource MiniRadioStyle}" />
+                                    <RadioButton x:Name="CountdownHoursRadio"
+                                                 Content="小时"
+                                                 Style="{StaticResource MiniRadioStyle}" />
+                                    <RadioButton x:Name="CountdownDaysRadio"
+                                                 Content="天"
+                                                 Style="{StaticResource MiniRadioStyle}" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Margin="2,12,0,0"
+                               Foreground="#7389AE"
+                               FontSize="11"
+                               Text="时间可直接输入，支持精确到 1 分钟。" />
+                </StackPanel>
+            </Border>
+
+            <TextBlock x:Name="ErrorTextBlock"
+                       Margin="2,10,0,0"
+                       Foreground="#FFB6C9"
+                       FontSize="12"
+                       Visibility="Collapsed" />
+
+            <StackPanel Margin="0,16,0,0"
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal">
+                <Button Width="84"
+                        Margin="0,0,8,0"
+                        Click="CancelButton_OnClick"
+                        Content="取消"
+                        Style="{StaticResource GhostButtonStyle}" />
+                <Button Width="98"
+                        Click="SaveButton_OnClick"
+                        Content="保存提醒"
+                        Style="{StaticResource PrimaryButtonStyle}" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

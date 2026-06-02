@@ -11,6 +11,7 @@ namespace LightStickyNote.App;
 public partial class App : System.Windows.Application
 {
     private TrayIconService? _trayIconService;
+    private ReminderMonitorService? _reminderMonitorService;
     private MainViewModel? _mainViewModel;
     private MainWindow? _mainWindow;
     private bool _isExiting;
@@ -74,6 +75,8 @@ public partial class App : System.Windows.Application
 
         _mainWindow = new MainWindow(_mainViewModel);
         _trayIconService = new TrayIconService(ShowMainWindow, HideMainWindow, ExitApplication);
+        _reminderMonitorService = new ReminderMonitorService(_mainViewModel, _trayIconService);
+        _reminderMonitorService.Start();
 
         MainWindow = _mainWindow;
         ShowMainWindow();
@@ -81,6 +84,7 @@ public partial class App : System.Windows.Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        _reminderMonitorService?.Dispose();
         _trayIconService?.Dispose();
         base.OnExit(e);
     }

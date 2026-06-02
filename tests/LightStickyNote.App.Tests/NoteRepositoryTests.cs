@@ -61,6 +61,37 @@ public sealed class NoteRepositoryTests : IDisposable
         Assert.True(reloaded.Items[1].IsDone);
     }
 
+    [Fact]
+    public async Task SaveNoteAsync_PersistsReminderMetadata()
+    {
+        var databasePath = Path.Combine(_rootDirectory, "reminders.db");
+        var initializer = new DatabaseInitializer(databasePath);
+        await initializer.InitializeAsync();
+
+        var repository = new NoteRepository(databasePath);
+        var note = await repository.GetOrCreatePrimaryNoteAsync();
+        var reminderAt = new DateTimeOffset(2026, 6, 1, 18, 30, 0, TimeSpan.FromHours(8));
+        var reminderNotifiedAt = reminderAt.AddMinutes(5);
+        note.Items =
+        [
+            new NoteItem
+            {
+                NoteId = note.Id,
+                Text = "pay invoice",
+                SortOrder = 0,
+                ReminderAt = reminderAt,
+                ReminderNotifiedAt = reminderNotifiedAt
+            }
+        ];
+
+        await repository.SaveNoteAsync(note);
+        var reloaded = await repository.GetOrCreatePrimaryNoteAsync();
+        var item = Assert.Single(reloaded.Items);
+
+        Assert.Equal(reminderAt, item.ReminderAt);
+        Assert.Equal(reminderNotifiedAt, item.ReminderNotifiedAt);
+    }
+
     public void Dispose()
     {
         try

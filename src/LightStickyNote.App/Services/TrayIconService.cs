@@ -32,6 +32,20 @@ public sealed class TrayIconService : IDisposable
         };
 
         _notifyIcon.DoubleClick += (_, _) => _showWindow();
+        _notifyIcon.BalloonTipClicked += (_, _) => _showWindow();
+    }
+
+    public void ShowReminder(string taskText)
+    {
+        var body = taskText.Length > 120
+            ? $"{taskText[..117]}..."
+            : taskText;
+
+        _notifyIcon.ShowBalloonTip(
+            6000,
+            "LightStickyNote 提醒",
+            body,
+            Forms.ToolTipIcon.Info);
     }
 
     public void Dispose()

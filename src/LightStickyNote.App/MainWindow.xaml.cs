@@ -505,6 +505,62 @@ public partial class MainWindow : Window
             return;
         }
 
+        ShowDeleteConfirmation(item);
+    }
+
+    private void TaskMenuButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { ContextMenu: { } contextMenu })
+        {
+            return;
+        }
+
+        contextMenu.PlacementTarget = sender as UIElement;
+        contextMenu.IsOpen = true;
+        e.Handled = true;
+    }
+
+    private void ReminderMenuItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { DataContext: TaskItemViewModel item })
+        {
+            return;
+        }
+
+        var dialog = new ReminderEditWindow(item)
+        {
+            Owner = this
+        };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        if (dialog.ReminderCleared)
+        {
+            item.ClearReminder();
+            return;
+        }
+
+        if (dialog.ReminderAt is { } reminderAt)
+        {
+            item.SetReminder(reminderAt);
+        }
+    }
+
+    private void DeleteMenuItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { DataContext: TaskItemViewModel item })
+        {
+            return;
+        }
+
+        ShowDeleteConfirmation(item);
+    }
+
+    private void ShowDeleteConfirmation(TaskItemViewModel item)
+    {
         _pendingDeleteItem = item;
         DeleteTaskPreviewTextBlock.Text = item.Text;
         DeleteConfirmationOverlay.Visibility = Visibility.Visible;
