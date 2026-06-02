@@ -138,6 +138,6 @@ dotnet test .\tests\LightStickyNote.App.Tests\LightStickyNote.App.Tests.csproj -
 
 ![界面示例 1](https://raw.gitcode.com/user-images/assets/9992847/43c9e04d-c347-409a-827f-97388c0f97ba/3c6d6a8713c42110540a7cbeb1906c60.png)
 ![界面示例 2](https://raw.gitcode.com/user-images/assets/9992847/cde3c95d-5a1f-47cd-b274-f0525fe3c418/4dbdbf3a1dc6c85d0f17058ba2311837.png)
-![a5f2ef7f-2de0-47af-8cc5-fa51443fa112.png](https://raw.gitcode.com/user-images/assets/9992847/de105b77-11f7-49e7-9bb9-7c2d08824ea9/a5f2ef7f-2de0-47af-8cc5-fa51443fa112.png 'a5f2ef7f-2de0-47af-8cc5-fa51443fa112.png')
+![image.png](https://raw.gitcode.com/user-images/assets/9992847/aa1f5fca-14d0-4314-8332-0c7b4536aa4e/image.png 'image.png')
 ![界面示例 3](https://raw.gitcode.com/user-images/assets/9992847/904b745b-9127-440f-8594-4d2526721e11/image.png)
 ![界面示例 4](https://raw.gitcode.com/user-images/assets/9992847/757b5cc1-d9a7-470e-b8ef-4c37973e8028/d234166391193ddfd73f634468b8909d.png)
