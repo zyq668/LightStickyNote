@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
+using LightStickyNote.App.Services;
 using LightStickyNote.App.ViewModels;
 
 namespace LightStickyNote.App;
@@ -39,6 +40,16 @@ public partial class ReminderEditWindow : Window
     {
         CountdownValueTextBox.Focus();
         CountdownValueTextBox.SelectAll();
+    }
+
+    private void PomodoroFocusButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        ApplyFocusPreset(FocusPreset.Pomodoro);
+    }
+
+    private void DeepFocusButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        ApplyFocusPreset(FocusPreset.DeepFocus);
     }
 
     private void ClearReminderButton_OnClick(object sender, RoutedEventArgs e)
@@ -122,6 +133,15 @@ public partial class ReminderEditWindow : Window
         }
 
         return CountdownUnit.Minutes;
+    }
+
+    private void ApplyFocusPreset(FocusPreset preset)
+    {
+        CountdownRadio.IsChecked = true;
+        CountdownMinutesRadio.IsChecked = true;
+        CountdownValueTextBox.Text = preset.Minutes.ToString(CultureInfo.InvariantCulture);
+        CountdownValueTextBox.Focus();
+        CountdownValueTextBox.SelectAll();
     }
 
     private void ShowError(string message)

@@ -119,6 +119,50 @@ public sealed class MainViewModel : ObservableObject
         await PersistAsync();
     }
 
+    public bool MoveItem(TaskItemViewModel item, int targetIndex)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+
+        var currentIndex = Items.IndexOf(item);
+        if (currentIndex < 0)
+        {
+            return false;
+        }
+
+        if (targetIndex < 0 || targetIndex >= Items.Count)
+        {
+            return false;
+        }
+
+        var moved = TaskReorderService.Move(Items, currentIndex, targetIndex);
+        if (!moved)
+        {
+            return false;
+        }
+
+        NotifyTaskSummaryChanged();
+        QueueSave("任务顺序已更新");
+        return true;
+    }
+
+    public bool MoveItemToInsertionIndex(TaskItemViewModel item, int insertionIndex)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+
+        var currentIndex = Items.IndexOf(item);
+        if (currentIndex < 0 || insertionIndex < 0 || insertionIndex > Items.Count)
+        {
+            return false;
+        }
+
+        var targetIndex = TaskReorderService.ToTargetIndexFromInsertionIndex(
+            currentIndex,
+            insertionIndex,
+            Items.Count);
+
+        return MoveItem(item, targetIndex);
+    }
+
     public void ApplyWindowToView(Window window)
     {
         _windowPlacementService.Apply(window, _note, Settings);
