@@ -20,7 +20,7 @@ public sealed class StartupRegistrationServiceTests : IDisposable
     [Fact]
     public async Task SetEnabledAsync_True_CreatesStartupScript()
     {
-        var launcherPath = Path.Combine(_rootDirectory, "启动便签.cmd");
+        var launcherPath = Path.Combine(_rootDirectory, "Launch-LightStickyNote.cmd");
         await File.WriteAllTextAsync(launcherPath, "@echo off");
         var startupDirectory = Path.Combine(_rootDirectory, "Startup");
         var service = new StartupRegistrationService(startupDirectory, launcherPath);
@@ -37,7 +37,7 @@ public sealed class StartupRegistrationServiceTests : IDisposable
     [Fact]
     public async Task SetEnabledAsync_False_RemovesStartupScript()
     {
-        var launcherPath = Path.Combine(_rootDirectory, "启动便签.cmd");
+        var launcherPath = Path.Combine(_rootDirectory, "Launch-LightStickyNote.cmd");
         await File.WriteAllTextAsync(launcherPath, "@echo off");
         var startupDirectory = Path.Combine(_rootDirectory, "Startup");
         var service = new StartupRegistrationService(startupDirectory, launcherPath);
@@ -47,6 +47,30 @@ public sealed class StartupRegistrationServiceTests : IDisposable
 
         Assert.False(service.IsEnabled());
         Assert.False(File.Exists(Path.Combine(startupDirectory, "LightStickyNote Startup.cmd")));
+    }
+
+    [Fact]
+    public async Task IsEnabled_ReturnsFalse_WhenStartupScriptTargetsDifferentLauncher()
+    {
+        var launcherPath = Path.Combine(_rootDirectory, "Launch-LightStickyNote.cmd");
+        var differentLauncherPath = Path.Combine(_rootDirectory, "other", "Launch-LightStickyNote.cmd");
+        await File.WriteAllTextAsync(launcherPath, "@echo off");
+        Directory.CreateDirectory(Path.GetDirectoryName(differentLauncherPath)!);
+        await File.WriteAllTextAsync(differentLauncherPath, "@echo off");
+
+        var startupDirectory = Path.Combine(_rootDirectory, "Startup");
+        Directory.CreateDirectory(startupDirectory);
+        var startupScriptPath = Path.Combine(startupDirectory, "LightStickyNote Startup.cmd");
+        await File.WriteAllTextAsync(
+            startupScriptPath,
+            $$"""
+            @echo off
+            start "" "{{differentLauncherPath}}"
+            """);
+
+        var service = new StartupRegistrationService(startupDirectory, launcherPath);
+
+        Assert.False(service.IsEnabled());
     }
 
     public void Dispose()

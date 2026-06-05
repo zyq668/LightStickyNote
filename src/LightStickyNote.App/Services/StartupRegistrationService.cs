@@ -18,7 +18,14 @@ public sealed class StartupRegistrationService
 
     public bool IsEnabled()
     {
-        return File.Exists(GetStartupScriptPath());
+        var startupScriptPath = GetStartupScriptPath();
+        if (!File.Exists(startupScriptPath))
+        {
+            return false;
+        }
+
+        var content = File.ReadAllText(startupScriptPath);
+        return content.Contains(_launcherScriptPath, StringComparison.OrdinalIgnoreCase);
     }
 
     public async Task SetEnabledAsync(bool enabled)
